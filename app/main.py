@@ -43,11 +43,11 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
         
     #if head co-ord y is 0, cant move west
     if head[0] == 0:
-        canGo.remove('east')
+        canGo.remove('west')
         
     #if head co-ord y is  width - 1 cant more east 
     if head[0] == mapWidth-1:
-        canGo.remove('west')
+        canGo.remove('east')
     
     #-----Ourselves-----
     '''
@@ -190,7 +190,7 @@ def move():
     #data = {'move': currMove, 'taunt': currTaunt}
     #ret = json.dumps(data)
     
-    #while(movementLeft < 4):+
+    #while(movementLeft < 4):
     #    movementLeft = movementLeft - 1
     
     parsedMapData = []
