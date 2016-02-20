@@ -27,7 +27,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
     #    return
     canGo = ['north', 'west', 'south', 'east']
     # Code to decide which dirs we can go
-    head = ourSnake.coords[0]
+    head = ourSnake['coords'][0]
     #length = len(ourSnake.coords)
     
     #-----WALLS-----
