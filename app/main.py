@@ -19,6 +19,8 @@ import os
 
 '''
 
+ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
+
 
 @bottle.route('/static/<path:path>')
 def static(path):
@@ -34,7 +36,7 @@ def index():
 
     return {
         'color': '#4099ff',
-        'head': "http://imgur.com/uajfGft"
+        'head': "http://i.imgur.com/uajfGft.png"
     }
 
 
