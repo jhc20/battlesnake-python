@@ -25,7 +25,7 @@ Example Recieved Snake Object
 '''
 
 def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
-    if snake.coords == []:
+    if len(ourSnake.coords) == 0:
         break;
     canGo = ['north', 'west', 'south', 'east']
     # Code to decide which dirs we can go
@@ -164,10 +164,15 @@ def move():
     mapHeight = data['height']
     snakemake(data['snakes'])
     foodmake(data['food'])
-    print str(snakes[0].snake_id)
+    
     for snake in snakes:
         if(snake.coords == 0):
             snake.coords = []
+        print "snake name: " + str(snake.name)
+        print "snake taunt: " + str(snake.taunt)
+        print "snake id: " + str(snake.snake_id)
+        print "snake age: " + str(snake.age)
+        print "snake coords: " + str(snake.coords)
     
     
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
