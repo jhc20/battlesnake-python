@@ -5,7 +5,7 @@ def __init__(self):
 def gettaunt():
     random.seed(None)
     taunts = []
-    f = open('app/taunts.txt', 'r')
+    f = open('taunts.txt', 'r')
     for line in f:
         taunts.append(line)
     return taunts[random.randint(0, len(taunts)-1)].rstrip()

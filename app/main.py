@@ -2,6 +2,7 @@ import bottle
 import os
 import json
 from app import taunt
+from snake import *
 
 ''' 
 Example Recieved Snake Object
@@ -22,8 +23,49 @@ Example Recieved Snake Object
 
 '''
 
+def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
+    canGo = ['north', 'west', 'south', 'east']
+    # Code to decide which dirs we can go
+    head = ourSnake.coords[0]
+    length = len(ourSnake.coords)
+    
+    #-----WALLS-----
+    
+    #if head co-ord x is 0, cant move north
+    if head[0] == 0:
+        canGo.remove('north')
+    
+    #if head co-ord x is height-1 cant move south
+    if head[0] == mapHeight-1:
+        canGo.remove('south')
+        
+    #if head co-ord y is 0, cant move west
+    if head[1] == 0:
+        canGo.remove('west')
+        
+    #if head co-ord y is  width - 1 cant more east 
+    if head[1] == mapWidth-1:
+        canGo.remove('east')
+    
+    #-----Ourselves-----
+
+    for coord in ourSnake.coords:
+        if coord == head:
+            continue
+        if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
+            canGo.remove('south')
+        if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
+            canGo.remove('east')
+        if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
+            canGo.remove('north')
+        if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
+            canGo.remove('west')
+    
+    return canGo
+
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
 snakes = []
+food = []
 
 
 @bottle.route('/static/<path:path>')
@@ -64,7 +106,11 @@ Object recieved for /start
 def snakemake(snakes_given):
     for snake in snakes_given:
         json_snake = json.loads(snake)
-        snakes.append(json_snake['id'], json_snake['snake'], json_snake['status'], json_snake['message'], json_snake['age'], json_snake['health'], json_snake['coords'], json_snake['kills'], json_snake['food'])
+        snakes.append(Snake( json_snake['id'],json_snake['name'], json_snake['status'], json_snake['message'], json_snake['taunt'], json_snake['age'], json_snake['health'], json_snake['coords'], json_snake['kills'], json_snake['food']))
+
+def foodmake(food):
+    for coords in food:
+        food.append(coords)
 
 
 @bottle.post('/start')
@@ -108,16 +154,38 @@ def move():
     data = bottle.request.json
 
     # TODO: Do things with data
+    
+    #Step one: Parse Map data
+    
+    mapWidth = data['width']
+    mapHeight = data['height']
+    snakemake(data['snakes'])
+    foodmake(data['food'])
+    
+    parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
+    
+    #Step two: Decide which direction we can go so we dont die
+    for snake in snakes:
+        if snake.snake_id == ourSnakeId:
+            ourSnake = snake
+            break
+        
+    dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth )
+    
+    
+    #Step three: choose which of the availbale directions to choose/ Add strategy
+    
+    if len(dirsCanGo) == 0:
+        currMove = 'north'
+    else:
+        currMove = dirsCanGo[0]
+    
     currTaunt = taunt.gettaunt().strip()
-    #currTaunt = 'lorem ipsum'
-    currMove = 'north'
-    #json_return = {}
-    #json_return["move"] = "North"
-    #json_return["taunt"] = currTaunt
+    #currMove = 'north'
+    
+    
     
     data = {'move': currMove, 'taunt': currTaunt}
-    #data['move'] = 'north'
-    #data['taunt'] = currTaunt
     ret = json.dumps(data)
     
     return ret

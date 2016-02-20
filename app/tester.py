@@ -1,8 +1,10 @@
 # A file to test classes
 
-import taunt
+from snake import *
 
 def main():
-    print taunt.gettaunt()
-    
+    snakesss = Snake('afsa', 'safas', 'asfasd',1,1,1,1,1,[[1,2],[2,3],[3,4]], 1)
+    print snakesss
+
+
 main()
