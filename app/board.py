@@ -3,7 +3,7 @@ def fillBoard(height, width, snakes, food, li):
     for i in xrange(height):
         board.append([])
         for j in xrange(width):
-            board[i].append(0):
+            board[i].append(0)
     for snake in snakes:
         if snake.snake_id == li:
             for coord in snake.coords:
