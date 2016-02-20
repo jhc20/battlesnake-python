@@ -181,12 +181,13 @@ def move():
         print "snake coords: " + str(snake.coords)
     '''
     
-    currTaunt = taunt.gettaunt().strip()
+    #currTaunt = taunt.gettaunt().strip()
+    currTaunt = 'meow'
     currMove = 'north'
     data = {'move': currMove, 'taunt': currTaunt}
     ret = json.dumps(data)
     return ret
-    
+    '''
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
     
     #Step two: Decide which direction we can go so we dont die
@@ -210,6 +211,7 @@ def move():
     data = {'move': currMove, 'taunt': currTaunt}
     ret = json.dumps(data)
     return ret
+    '''
     '''
     {
         'move': 'north',
