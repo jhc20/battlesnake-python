@@ -161,9 +161,9 @@ def move():
     #Step one: Parse Map data
     
     mapWidth = data['width']
-    print "printing data"
-    for i in data:
-        print str(i[0])
+    print data['width']
+    print data['height']
+    print data['snakes']
     
     mapHeight = data['height']
     snakemake(data['snakes'])
