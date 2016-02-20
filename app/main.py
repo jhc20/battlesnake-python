@@ -110,7 +110,7 @@ def snakemake(snakes_given):
     for snake in snakes_given:
         temp = Snake(snake['id'],snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'], snake['health'], snake['coords'], snake['kills'])
         snakes.append(temp)
-        print "Made snake coords: " + str(temp['coords'])
+        print "Made snake coords: " + str(temp.coords)
 
 def foodmake(food):
     for coords in food:
