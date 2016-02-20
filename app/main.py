@@ -68,10 +68,10 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
 snakes = []
 food = []
-movementLeft = 0
-movementRight = 0
-movementUp = 0
-movementDown = 0
+#movementLeft = 0
+#movementRight = 0
+#movementUp = 0
+#movementDown = 0
 
 
 @bottle.route('/static/<path:path>')
@@ -190,8 +190,8 @@ def move():
     #data = {'move': currMove, 'taunt': currTaunt}
     #ret = json.dumps(data)
     
-    while(movementLeft < 4):
-        movementLeft = movementLeft - 1
+    #while(movementLeft < 4):
+    #    movementLeft = movementLeft - 1
     
     parsedMapData = []
     
