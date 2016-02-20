@@ -2,8 +2,6 @@ import bottle
 import os
 import json
 from app import taunt
-from snake import *
-from board import *
 
 ''' 
 Example Recieved Snake Object
@@ -167,8 +165,8 @@ def move():
     #print data['snakes']
     
     mapHeight = data['height']
-    snakemake(data['snakes'])
-    foodmake(data['food'])
+    #snakemake(data['snakes'])
+    #foodmake(data['food'])
     
     '''
     for snake in snakes:
