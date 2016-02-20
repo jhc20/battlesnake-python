@@ -3,6 +3,7 @@ import os
 import json
 from app import taunt
 from snake import *
+from board import *
 
 ''' 
 Example Recieved Snake Object
