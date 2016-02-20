@@ -163,7 +163,7 @@ def move():
     mapWidth = data['width']
     print "printing data"
     for i in data:
-        print str(i)
+        print str(i[0])
     
     mapHeight = data['height']
     snakemake(data['snakes'])
