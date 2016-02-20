@@ -161,13 +161,13 @@ def move():
     
     #Step one: Parse Map data
     
-    #mapWidth = data['width']
+    mapWidth = data['width']
     #print data['width']
     #print data['height']
     #print data['snakes']
     
-    #mapHeight = data['height']
-    #snakemake(data['snakes'])
+    mapHeight = data['height']
+    snakemake(data['snakes'])
     #foodmake(data['food'])
     
     '''
