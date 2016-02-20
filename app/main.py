@@ -162,14 +162,15 @@ def move():
     #Step one: Parse Map data
     
     mapWidth = data['width']
-    print data['width']
-    print data['height']
-    print data['snakes']
+    #print data['width']
+    #print data['height']
+    #print data['snakes']
     
     mapHeight = data['height']
     snakemake(data['snakes'])
     foodmake(data['food'])
     
+    '''
     for snake in snakes:
         if(snake.coords == 0):
             snake.coords = []
@@ -178,6 +179,7 @@ def move():
         print "snake id: " + str(snake.snake_id)
         print "snake age: " + str(snake.age)
         print "snake coords: " + str(snake.coords)
+    '''
     
     currTaunt = taunt.gettaunt().strip()
     currMove = 'north'
