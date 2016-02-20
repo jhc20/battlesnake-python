@@ -24,12 +24,13 @@ Example Recieved Snake Object
 
 def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
     #if len(ourSnake.coords) == 0:
+    
     #    return
     canGo = ['north', 'west', 'south', 'east']
     # Code to decide which dirs we can go
     head = ourSnake['coords'][0]
     #length = len(ourSnake.coords)
-    
+    print head
     #-----WALLS-----
     
     #if head co-ord x is 0, cant move north
@@ -189,6 +190,8 @@ def move():
     #data = {'move': currMove, 'taunt': currTaunt}
     #ret = json.dumps(data)
     
+    while(movementLeft < 4):
+        movementLeft = movementLeft - 1
     
     parsedMapData = []
     
