@@ -1,7 +1,7 @@
 import bottle
 import os
 import json
-import taunt
+from app import taunt
 
 ''' 
 Example Recieved Snake Object
