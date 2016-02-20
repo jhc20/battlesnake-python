@@ -16,7 +16,7 @@ def index():
 
     return {
         'color': '#4099ff',
-        'head': head_url
+        'head': "http://imgur.com/uajfGft"
     }
 
 
@@ -36,6 +36,7 @@ def move():
     data = bottle.request.json
 
     # TODO: Do things with data
+    
 
     return {
         'move': 'north',
@@ -50,7 +51,7 @@ def end():
     # TODO: Do things with data
 
     return {
-        'taunt': 'I FEEL LIKE PABLO'
+        'taunt': 'YEEZY YEEZY YEEZY JUST JUMPED OVER JUMPMAN'
     }
 
 
