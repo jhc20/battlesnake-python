@@ -110,7 +110,7 @@ def snakemake(snakes_given):
     for snake in snakes_given:
         temp = Snake(snake['id'],snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'], snake['health'], snake['coords'], snake['kills'])
         snakes.append(temp)
-        print "Made snake coords: " + str(temp.coords)
+        #print "Made snake coords: " + str(temp.coords)
 
 def foodmake(food):
     for coords in food:
@@ -161,14 +161,14 @@ def move():
     
     #Step one: Parse Map data
     
-    mapWidth = data['width']
+    #mapWidth = data['width']
     #print data['width']
     #print data['height']
     #print data['snakes']
     
-    mapHeight = data['height']
-    snakemake(data['snakes'])
-    foodmake(data['food'])
+    #mapHeight = data['height']
+    #snakemake(data['snakes'])
+    #foodmake(data['food'])
     
     '''
     for snake in snakes:
