@@ -23,6 +23,7 @@ Example Recieved Snake Object
 '''
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
+snakes = []
 
 
 @bottle.route('/static/<path:path>')
@@ -32,10 +33,10 @@ def static(path):
 
 @bottle.get('/')
 def index():
-    head_url = '%s://%s/static/head.png' % (
-        bottle.request.urlparts.scheme,
-        bottle.request.urlparts.netloc
-    )
+    #head_url = '%s://%s/static/head.png' % (
+    #    bottle.request.urlparts.scheme,
+    #    bottle.request.urlparts.netloc
+    #)
 
     return {
         'color': '#4099ff',
@@ -60,9 +61,10 @@ Object recieved for /start
 }
 '''
 
-def snakemake(snakes):
-    for snake in snakes:
+def snakemake(snakes_given):
+    for snake in snakes_given:
         json_snake = json.loads(snake)
+        snakes.append(json_snake[
 
 
 @bottle.post('/start')
@@ -107,13 +109,16 @@ def move():
 
     # TODO: Do things with data
     currTaunt = taunt.gettaunt()
-    #json_return = {}
-    #json_return["move"] = "North"
-    #json_return["taunt"] = currTaunt
-    return {
+    json_return = {}
+    json_return["move"] = "North"
+    json_return["taunt"] = currTaunt
+    return json_return
+    '''
+    {
         'move': 'north',
-        'taunt': '\'' + currTaunt '\''
+        'taunt': 'Meow'
     }
+    '''
 
 '''  
 Object revcieved for /end
