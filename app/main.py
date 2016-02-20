@@ -22,7 +22,7 @@ Example Recieved Snake Object
 
 '''
 
-def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
+def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
     #if len(ourSnake.coords) == 0:
     #    return
     canGo = ['north', 'west', 'south', 'east']
