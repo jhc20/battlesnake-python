@@ -6,13 +6,13 @@ def fillBoard(height, width, snakes, food, li):
             board[i].append(0)
     for snake in snakes:
         if snake.snake_id == li:
-            if len(snake.coord) == 0:
+            if len(snake.coords) == 0:
                 continue
             for coord in snake.coords:
                 board[coord[0]][coord[1]] = 1
             board[snake.coords[-1][0]][board[snake.coords[-1][1]]] = 0
         else:
-            if len(snake.coord) == 0:
+            if len(snake.coords) == 0:
                 continue
             for coord in snake.coords:
                 board[coord[0], coord[1]] = 2

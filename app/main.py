@@ -162,7 +162,7 @@ def move():
     mapHeight = data['height']
     snakemake(data['snakes'])
     foodmake(data['food'])
-    print str(snakes[0].coords)
+    print str(snakes[0].id)
     for snake in snakes:
         if(snake.coords == 0):
             snake.coords = []
