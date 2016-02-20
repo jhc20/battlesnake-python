@@ -104,8 +104,8 @@ Object recieved for /start
 '''
 
 def snakemake(snakes_given):
-    Snake(snake['id'],snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'], snake['health'], snake['coords'], snake['kills'], snake['food'])
     for snake in snakes_given:
+        temp = Snake(snake['id'],snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'], snake['health'], snake['coords'], snake['kills'], snake['food'])
         snakes.append(sadfsa)
 
 def foodmake(food):
