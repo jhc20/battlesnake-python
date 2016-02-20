@@ -1,6 +1,24 @@
 import bottle
 import os
 
+''' Example Recieved Snake Object
+
+{
+    "id": "1234-567890-123456-7890",
+    "name": "Well Documented Snake",
+    "status": "alive",
+    "message": "Moved north",
+    "taunt": "Let's rock!",
+    "age": 56,
+    "health": 83,
+    "coords": [ [1, 1], [1, 2], [2, 2] ],
+    "kills": 4,
+    "food": 12,
+    "gold": 2
+}
+
+'''
+
 
 @bottle.route('/static/<path:path>')
 def static(path):
@@ -20,6 +38,22 @@ def index():
     }
 
 
+''' Object recieved for /start
+{
+    "game": "hairy-cheese",
+    "mode": "advanced",
+    "turn": 0,
+    "height": 20,
+    "width": 30,
+    "snakes": [
+        <Snake Object>, <Snake Object>, ...
+    ],
+    "food": [],
+    "walls": [],  // Advanced Only
+    "gold": []    // Advanced Only
+}
+'''
+
 @bottle.post('/start')
 def start():
     data = bottle.request.json
@@ -29,6 +63,30 @@ def start():
     return {
         'taunt': 'Lorem Ipsum'
     }
+
+'''  Recieved Move object for /move
+{
+    "game": "hairy-cheese",
+    "mode": "advanced",
+    "turn": 4,
+    "height": 20,
+    "width": 30,
+    "snakes": [
+        <Snake Object>, <Snake Object>, ...
+    ],
+    "food": [
+        [1, 2], [9, 3], ...
+    ],
+    "walls": [    // Advanced Only
+        [2, 2]
+    ],
+    "gold": [     // Advanced Only
+        [5, 5]
+    ]
+}
+
+'''
+
 
 
 @bottle.post('/move')
@@ -42,6 +100,29 @@ def move():
         'move': 'north',
         'taunt': 'Lorem Ipsum'
     }
+
+'''  Object revcieved for /end
+{
+    "game": "hairy-cheese",
+    "mode": "advanced",
+    "turn": 4,
+    "height": 20,
+    "width": 30,
+    "snakes": [
+        <Snake Object>, <Snake Object>, ...
+    ],
+    "food": [
+        [1, 2], [9, 3], ...
+    ],
+    "walls": [    // Advanced Only
+        [2, 2]
+    ],
+    "gold": [     // Advanced Only
+        [5, 5]
+    ]
+}
+
+'''
 
 
 @bottle.post('/end')

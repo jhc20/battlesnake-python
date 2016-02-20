@@ -3,6 +3,6 @@
 import taunt
 
 def main():
-    taunt.gettaunt()
+    print taunt.gettaunt()
     
 main()
