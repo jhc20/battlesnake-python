@@ -43,11 +43,11 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
         
     #if head co-ord y is 0, cant move west
     if head[0] == 0:
-        canGo.remove('west')
+        canGo.remove('east')
         
     #if head co-ord y is  width - 1 cant more east 
     if head[0] == mapWidth-1:
-        canGo.remove('east')
+        canGo.remove('west')
     
     #-----Ourselves-----
     '''
