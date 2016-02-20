@@ -161,6 +161,10 @@ def move():
     #Step one: Parse Map data
     
     mapWidth = data['width']
+    print "printing data"
+    for i in data:
+        print str(i)
+    
     mapHeight = data['height']
     snakemake(data['snakes'])
     foodmake(data['food'])
