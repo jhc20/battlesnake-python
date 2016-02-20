@@ -34,19 +34,19 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
     #-----WALLS-----
     
     #if head co-ord x is 0, cant move north
-    if head[0] == 0:
+    if head[1] == 0:
         canGo.remove('north')
     
     #if head co-ord x is height-1 cant move south
-    if head[0] == mapHeight-1:
+    if head[1] == mapHeight-1:
         canGo.remove('south')
         
     #if head co-ord y is 0, cant move west
-    if head[1] == 0:
+    if head[0] == 0:
         canGo.remove('west')
         
     #if head co-ord y is  width - 1 cant more east 
-    if head[1] == mapWidth-1:
+    if head[0] == mapWidth-1:
         canGo.remove('east')
     
     #-----Ourselves-----
@@ -190,7 +190,7 @@ def move():
     #data = {'move': currMove, 'taunt': currTaunt}
     #ret = json.dumps(data)
     
-    #while(movementLeft < 4):
+    #while(movementLeft < 4):+
     #    movementLeft = movementLeft - 1
     
     parsedMapData = []
