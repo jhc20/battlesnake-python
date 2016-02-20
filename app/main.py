@@ -179,6 +179,11 @@ def move():
         print "snake age: " + str(snake.age)
         print "snake coords: " + str(snake.coords)
     
+    currTaunt = taunt.gettaunt().strip()
+    currMove = 'north'
+    data = {'move': currMove, 'taunt': currTaunt}
+    ret = json.dumps(data)
+    return ret
     
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
     
@@ -200,12 +205,8 @@ def move():
     
     currTaunt = taunt.gettaunt().strip()
     #currMove = 'north'
-    
-    
-    
     data = {'move': currMove, 'taunt': currTaunt}
     ret = json.dumps(data)
-    
     return ret
     '''
     {
