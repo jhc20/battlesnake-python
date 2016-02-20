@@ -26,7 +26,7 @@ Example Recieved Snake Object
 
 def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
     if len(ourSnake.coords) == 0:
-        break;
+        break
     canGo = ['north', 'west', 'south', 'east']
     # Code to decide which dirs we can go
     head = ourSnake.coords[0]
