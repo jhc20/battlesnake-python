@@ -105,8 +105,7 @@ Object recieved for /start
 
 def snakemake(snakes_given):
     for snake in snakes_given:
-        json_snake = json.loads(snake)
-        snakes.append(Snake( json_snake['id'],json_snake['name'], json_snake['status'], json_snake['message'], json_snake['taunt'], json_snake['age'], json_snake['health'], json_snake['coords'], json_snake['kills'], json_snake['food']))
+        snakes.append(Snake( snake['id'],snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'], snake['health'], snake['coords'], snake['kills'], snake['food']))
 
 def foodmake(food):
     for coords in food:

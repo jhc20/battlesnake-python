@@ -16,4 +16,5 @@ def fillBoard(height, width, snakes, food, li)
     for coord in food:
         board[coords[0]][coords[1]] = 3
     
+    print(board)
     return board
