@@ -109,14 +109,15 @@ def move():
 
     # TODO: Do things with data
     currTaunt = taunt.gettaunt()
+    currMove = 'north'
     #json_return = {}
     #json_return["move"] = "North"
     #json_return["taunt"] = currTaunt
     
-    data = {}
-    data['move'] = 'north'
-    data['taunt'] = currTaunt
-    ret = json.dumps(d)
+    data = {'move': currMove, 'taunt': currTaunt}
+    #data['move'] = 'north'
+    #data['taunt'] = currTaunt
+    ret = json.dumps(data)
     
     return ret
     '''
