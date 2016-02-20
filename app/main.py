@@ -64,7 +64,7 @@ Object recieved for /start
 def snakemake(snakes_given):
     for snake in snakes_given:
         json_snake = json.loads(snake)
-        snakes.append(json_snake[
+        snakes.append(json_snake['id'], json_snake['snake'], json_snake['status'], json_snake['message'], json_snake['age'], json_snake['health'], json_snake['coords'], json_snake['kills'], json_snake['food'])
 
 
 @bottle.post('/start')
@@ -109,10 +109,16 @@ def move():
 
     # TODO: Do things with data
     currTaunt = taunt.gettaunt()
-    json_return = {}
-    json_return["move"] = "North"
-    json_return["taunt"] = currTaunt
-    return json_return
+    #json_return = {}
+    #json_return["move"] = "North"
+    #json_return["taunt"] = currTaunt
+    
+    data = {}
+    data['move'] = 'north'
+    data['taunt'] = currTaunt
+    ret = json.dumps(d)
+    
+    return ret
     '''
     {
         'move': 'north',
