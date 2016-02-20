@@ -48,7 +48,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
     #if head co-ord y is  width - 1 cant more east 
     if head[0] == mapWidth-1:
         canGo.remove('east')
-    
+    print str(canGo)
     #-----Ourselves-----
     '''
     for coord in ourSnake.coords:
