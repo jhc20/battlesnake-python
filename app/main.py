@@ -108,7 +108,7 @@ def move():
     data = bottle.request.json
 
     # TODO: Do things with data
-    currTaunt = taunt.gettaunt()
+    currTaunt = taunt.gettaunt().strip()
     #currTaunt = 'lorem ipsum'
     currMove = 'north'
     #json_return = {}
