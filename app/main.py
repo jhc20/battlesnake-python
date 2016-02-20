@@ -1,7 +1,10 @@
 import bottle
 import os
+import json
+import taunt
 
-''' Example Recieved Snake Object
+''' 
+Example Recieved Snake Object
 
 {
     "id": "1234-567890-123456-7890",
@@ -11,7 +14,7 @@ import os
     "taunt": "Let's rock!",
     "age": 56,
     "health": 83,
-    "coords": [ [1, 1], [1, 2], [2, 2] ],
+    "coords": [ [1, 1], [1, 2], [2, 2] ,]
     "kills": 4,
     "food": 12,
     "gold": 2
@@ -40,7 +43,8 @@ def index():
     }
 
 
-''' Object recieved for /start
+''' 
+Object recieved for /start
 {
     "game": "hairy-cheese",
     "mode": "advanced",
@@ -56,6 +60,11 @@ def index():
 }
 '''
 
+def snakemake(snakes):
+    for snake in snakes:
+        json_snake = json.loads(snake)
+
+
 @bottle.post('/start')
 def start():
     data = bottle.request.json
@@ -66,7 +75,8 @@ def start():
         'taunt': 'Lorem Ipsum'
     }
 
-'''  Recieved Move object for /move
+'''  
+Recieved Move object for /move
 {
     "game": "hairy-cheese",
     "mode": "advanced",
@@ -96,14 +106,15 @@ def move():
     data = bottle.request.json
 
     # TODO: Do things with data
+    currTaunt = taunt.gettaunt()
     
-
     return {
         'move': 'north',
-        'taunt': 'Lorem Ipsum'
+        'taunt': currTaunt
     }
 
-'''  Object revcieved for /end
+'''  
+Object revcieved for /end
 {
     "game": "hairy-cheese",
     "mode": "advanced",
