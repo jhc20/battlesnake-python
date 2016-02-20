@@ -165,8 +165,8 @@ def move():
     #print data['snakes']
     
     mapHeight = data['height']
-    #snakemake(data['snakes'])
-    #foodmake(data['food'])
+    snakemake(data['snakes'])
+    foodmake(data['food'])
     
     '''
     for snake in snakes:
