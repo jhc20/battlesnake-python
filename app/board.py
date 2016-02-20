@@ -1,4 +1,4 @@
-def fillBoard(height, width, snakes, food, li)
+def fillBoard(height, width, snakes, food, li):
     board = []
     for i in xrange(height):
         board.append([])
