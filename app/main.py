@@ -106,7 +106,7 @@ Object recieved for /start
 def snakemake(snakes_given):
     for snake in snakes_given:
         temp = Snake(snake['id'],snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'], snake['health'], snake['coords'], snake['kills'], snake['food'])
-        snakes.append(sadfsa)
+        snakes.append(temp)
 
 def foodmake(food):
     for coords in food:
