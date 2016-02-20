@@ -107,6 +107,7 @@ def move():
 
     # TODO: Do things with data
     currTaunt = taunt.gettaunt()
+    currTaunt.rstrip()
     
     return {
         'move': 'north',
