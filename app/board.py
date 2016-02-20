@@ -8,11 +8,11 @@ def fillBoard(height, width, snakes, food, li):
         if snake.snake_id == li:
             for coord in snake.coords:
                 board[coord[0]][coord[1]] = 1
-            board[snake.coords[-1][0]][board[snake.coords[-1][1]] = 0
+            board[snake.coords[-1][0]][board[snake.coords[-1][1]]] = 0
         else:
             for coord in snake.coords:
                 board[coord[0], coord[1]] = 2
-            board[snake.coords[-1][0]][board[snake.coords[-1][1]] = 0
+            board[snake.coords[-1][0]][board[snake.coords[-1][1]]] = 0
     for coord in food:
         board[coords[0]][coords[1]] = 3
     
