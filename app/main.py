@@ -163,6 +163,11 @@ def move():
     snakemake(data['snakes'])
     foodmake(data['food'])
     print str(snakes[0].coords)
+    for snake in snakes:
+        if(snake.coords == 0):
+            snake.coords = []
+    
+    
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
     
     #Step two: Decide which direction we can go so we dont die
