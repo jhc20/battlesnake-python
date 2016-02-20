@@ -162,7 +162,7 @@ def move():
     mapHeight = data['height']
     snakemake(data['snakes'])
     foodmake(data['food'])
-    
+    print str(snakes[0].coords)
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
     
     #Step two: Decide which direction we can go so we dont die
