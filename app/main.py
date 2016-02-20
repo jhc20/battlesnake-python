@@ -1,7 +1,7 @@
 import bottle
 import os
 import json
-from app import taunt
+
 
 ''' 
 Example Recieved Snake Object
@@ -49,7 +49,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
         canGo.remove('east')
     
     #-----Ourselves-----
-
+    '''
     for coord in ourSnake.coords:
         if coord == head:
             continue
@@ -61,12 +61,16 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapLength ):
             canGo.remove('north')
         if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
             canGo.remove('west')
-    
+    '''
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
 snakes = []
 food = []
+movementLeft = 0
+movementRight = 0
+movementUp = 0
+movementDown = 0
 
 
 @bottle.route('/static/<path:path>')
@@ -165,7 +169,7 @@ def move():
     #print data['snakes']
     
     mapHeight = data['height']
-    snakemake(data['snakes'])
+    #snakemake(data['snakes'])
     #foodmake(data['food'])
     
     '''
@@ -181,9 +185,23 @@ def move():
     
     #currTaunt = taunt.gettaunt().strip()
     currTaunt = 'meow'
-    currMove = 'north'
-    data = {'move': currMove, 'taunt': currTaunt}
+    #currMove = 'north'
+    #data = {'move': currMove, 'taunt': currTaunt}
+    #ret = json.dumps(data)
+    
+    
+    parsedMapData = []
+    
+    for snake in data['snakes']:
+        if snake['id'] == ourSnakeId:
+            ourSnake = snake
+            break
+    
+    dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth )
+    currMove = dirsCanGo[0]
+    data = {'move': currMove, 'taunt': 'meow' }
     ret = json.dumps(data)
+    
     return ret
     '''
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
