@@ -100,6 +100,26 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
         if (snake['coords'][0][0] - head[0] == -2):
             if 'south' in canGo:
                 canGo.remove('south')
+        if ((snake['coords'][0][1] - head[1] == 1) && (snake['coords'][0][0] - head[0] == 1)):
+            if 'east' in canGo:
+                canGo.remove('east')
+            if 'north' in canGo:
+                canGo.remove('north')
+        if ((snake['coords'][0][1] - head[1] == 1) && (snake['coords'][0][0] - head[0] == -1)):
+            if 'east' in canGo:
+                canGo.remove('east')
+            if 'south' in canGo:
+                canGo.remove('south')
+        if ((snake['coords'][0][1] - head[1] == -1) && (snake['coords'][0][0] - head[0] == 1)):
+            if 'west' in canGo:
+                canGo.remove('west')
+            if 'north' in canGo:
+                canGo.remove('north')
+        if ((snake['coords'][0][1] - head[1] == -1) && (snake['coords'][0][0] - head[0] == -1)):
+            if 'south' in canGo:
+                canGo.remove('west')
+            if 'south' in canGo:
+                canGo.remove('south')
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
@@ -202,16 +222,6 @@ def move():
     #snakemake(data['snakes'])
     #foodmake(data['food'])
     
-    '''
-    for snake in snakes:
-        if(snake.coords == 0):
-            snake.coords = []
-        print "snake name: " + str(snake.name)
-        print "snake taunt: " + str(snake.taunt)
-        print "snake id: " + str(snake.snake_id)
-        print "snake age: " + str(snake.age)
-        print "snake coords: " + str(snake.coords)
-    '''
     
     #currTaunt = taunt.gettaunt().strip()
     currTaunt = 'meow'
@@ -234,6 +244,7 @@ def move():
     ret = json.dumps(data)
     
     return ret
+    
     '''
     parsedMapData = fillBoard(mapHeight, mapWidth, snakes, food, ourSnakeId)
     
