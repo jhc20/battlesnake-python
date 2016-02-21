@@ -88,35 +88,35 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
                     canGo.remove('west')
                     
     for snake in otherSnakes:
-        if (snake['coords'][0][0] - head[0] == 2):
+        if (snake['coords'][0][0] - head[0] == 2) and (snake['coords'][0][1] == head[1]):
             if 'east' in canGo:
                 canGo.remove('east')
-        if (snake['coords'][0][0] - head[0] == -2):
+        if (snake['coords'][0][0] - head[0] == -2) and (snake['coords'][0][1] == head[1]):
             if 'west' in canGo:
                 canGo.remove('west')
-        if (snake['coords'][0][1] - head[1] == 2):
+        if (snake['coords'][0][1] - head[1] == 2) and (snake['coords'][0][0] == head[0]):
             if 'north' in canGo:
                 canGo.remove('north')
-        if (snake['coords'][0][1] - head[1] == -2):
+        if (snake['coords'][0][1] - head[1] == -2) and (snake['coords'][0][0] == head[0]):
             if 'south' in canGo:
                 canGo.remove('south')
         '''
-        if ((snake['coords'][0][1] - head[1] == 1) and (snake['coords'][0][0] - head[0] == 1)):
+        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == 1)):
             if 'east' in canGo:
                 canGo.remove('east')
             if 'north' in canGo:
                 canGo.remove('north')
-        if ((snake['coords'][0][1] - head[1] == 1) and (snake['coords'][0][0] - head[0] == -1)):
+        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == -1)):
             if 'east' in canGo:
                 canGo.remove('east')
             if 'south' in canGo:
                 canGo.remove('south')
-        if ((snake['coords'][0][1] - head[1] == -1) and (snake['coords'][0][0] - head[0] == 1)):
+        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == 1)):
             if 'west' in canGo:
                 canGo.remove('west')
             if 'north' in canGo:
                 canGo.remove('north')
-        if ((snake['coords'][0][1] - head[1] == -1) and (snake['coords'][0][0] - head[0] == -1)):
+        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == -1)):
             if 'west' in canGo:
                 canGo.remove('west')
             if 'south' in canGo:
