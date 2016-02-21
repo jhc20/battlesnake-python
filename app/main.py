@@ -240,7 +240,7 @@ def move():
             otherSnakes.append(snake)
     food = data['food']
     dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth, otherSnakes, food)
-    currMove = dirsCanGo[0]
+    currMove = dirsCanGo[random.randint(0, len(dirsCanGo)-1)]
     data = {'move': currMove, 'taunt': 'meow' }
     ret = json.dumps(data)
     
