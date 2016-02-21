@@ -116,7 +116,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
             if 'north' in canGo:
                 canGo.remove('north')
         if ((snake['coords'][0][1] - head[1] == -1) and (snake['coords'][0][0] - head[0] == -1)):
-            if 'south' in canGo:
+            if 'west' in canGo:
                 canGo.remove('west')
             if 'south' in canGo:
                 canGo.remove('south')
