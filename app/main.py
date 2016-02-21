@@ -68,20 +68,20 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
                 canGo.remove('west')
 
     #-----Other Snakes -----
-    
-    for coord in otherSnakes['coords']:
-        if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
-            if 'south' in canGo:
-                canGo.remove('south')
-        if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
-            if 'east' in canGo:
-                canGo.remove('east')
-        if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
-            if 'north'  in canGo:
-                canGo.remove('north')
-        if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
-            if 'west' in canGo:
-                canGo.remove('west')
+    for snake in otherSnakes:
+        for coord in otherSnakes['coords']:
+            if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
+                if 'south' in canGo:
+                    canGo.remove('south')
+            if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
+                if 'east' in canGo:
+                    canGo.remove('east')
+            if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
+                if 'north'  in canGo:
+                    canGo.remove('north')
+            if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
+                if 'west' in canGo:
+                    canGo.remove('west')
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
