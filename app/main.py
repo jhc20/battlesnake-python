@@ -22,7 +22,9 @@ Example Recieved Snake Object
 
 '''
 
-def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
+def bfs(canGo):
+
+def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
     #if len(ourSnake.coords) == 0:
     
     #    return
@@ -50,7 +52,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
         canGo.remove('east')
     print str(canGo)
     #-----Ourselves-----
-
+    del ourSnake['coords'][-1]    
     for coord in ourSnake['coords']:
         if coord == head:
             continue
@@ -69,6 +71,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
 
     #-----Other Snakes -----
     for snake in otherSnakes:
+        del snake['coords'][-1]
         for coord in snake['coords']:
             if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
                 if 'south' in canGo:
@@ -82,11 +85,25 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
             if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
                 if 'west' in canGo:
                     canGo.remove('west')
+                    
+    for snake in otherSnakes:
+        for coord in snake['coords']:
+            if (coord[1] - head[1] == 2):
+                if 'east' in canGo:
+                    canGo.remove('east')
+            if (coord[1] - head[1] == -2):
+                if 'west' in canGo:
+                    canGo.remove('west')
+            if (coord[0] - head[0] == 2):
+                if 'north' in canGo:
+                    canGo.remove('north')
+            if (coord[1] - head[1] == -2):
+                if 'south' in canGo:
+                    canGo.remove('south')
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
 snakes = []
-food = []
 
 
 @bottle.route('/static/<path:path>')
@@ -130,9 +147,6 @@ def snakemake(snakes_given):
         snakes.append(temp)
         #print "Made snake coords: " + str(temp.coords)
 
-def foodmake(food):
-    for coords in food:
-        food.append(coords)
 
 
 @bottle.post('/start')
@@ -213,8 +227,8 @@ def move():
             ourSnake = snake
         else:
             otherSnakes.append(snake)
-    
-    dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth, otherSnakes )
+    food = data['food']
+    dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth, otherSnakes, food)
     currMove = dirsCanGo[0]
     data = {'move': currMove, 'taunt': 'meow' }
     ret = json.dumps(data)
