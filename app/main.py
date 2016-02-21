@@ -1,6 +1,7 @@
 import bottle
 import os
 import json
+import random
 
 
 ''' 
@@ -96,7 +97,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
         if (snake['coords'][0][0] - head[0] == 2):
             if 'north' in canGo:
                 canGo.remove('north')
-        if (snake['coords'][0][1] - head[1] == -2):
+        if (snake['coords'][0][0] - head[0] == -2):
             if 'south' in canGo:
                 canGo.remove('south')
     return canGo
