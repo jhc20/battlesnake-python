@@ -69,7 +69,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
 
     #-----Other Snakes -----
     for snake in otherSnakes:
-        for coord in otherSnakes['coords']:
+        for coord in snakes['coords']:
             if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
                 if 'south' in canGo:
                     canGo.remove('south')
