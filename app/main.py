@@ -22,7 +22,7 @@ Example Recieved Snake Object
 
 '''
 
-def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
+def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes):
     #if len(ourSnake.coords) == 0:
     
     #    return
@@ -67,15 +67,26 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
             if 'west' in canGo:
                 canGo.remove('west')
 
+    #-----Other Snakes -----
+    
+    for coord in otherSnakes['coords']:
+        if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
+            if 'south' in canGo:
+                canGo.remove('south')
+        if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
+            if 'east' in canGo:
+                canGo.remove('east')
+        if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
+            if 'north'  in canGo:
+                canGo.remove('north')
+        if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
+            if 'west' in canGo:
+                canGo.remove('west')
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
 snakes = []
 food = []
-#movementLeft = 0
-#movementRight = 0
-#movementUp = 0
-#movementDown = 0
 
 
 @bottle.route('/static/<path:path>')
@@ -194,17 +205,16 @@ def move():
     #data = {'move': currMove, 'taunt': currTaunt}
     #ret = json.dumps(data)
     
-    #while(movementLeft < 4):
-    #    movementLeft = movementLeft - 1
     
     parsedMapData = []
-    
+    otherSnakes = []
     for snake in data['snakes']:
         if snake['id'] == ourSnakeId:
             ourSnake = snake
-            break
+        else:
+            otherSnakes.append(snake)
     
-    dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth )
+    dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth, otherSnakes )
     currMove = dirsCanGo[0]
     data = {'move': currMove, 'taunt': 'meow' }
     ret = json.dumps(data)
