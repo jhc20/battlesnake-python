@@ -87,19 +87,18 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
                     canGo.remove('west')
                     
     for snake in otherSnakes:
-        for coord in snake['coords']:
-            if (coord[1] - head[1] == 2):
-                if 'east' in canGo:
-                    canGo.remove('east')
-            if (coord[1] - head[1] == -2):
-                if 'west' in canGo:
-                    canGo.remove('west')
-            if (coord[0] - head[0] == 2):
-                if 'north' in canGo:
-                    canGo.remove('north')
-            if (coord[1] - head[1] == -2):
-                if 'south' in canGo:
-                    canGo.remove('south')
+        if (snake['coords'][0][1] - head[1] == 2):
+            if 'east' in canGo:
+                canGo.remove('east')
+        if (snake['coords'][0][1] - head[1] == -2):
+            if 'west' in canGo:
+                canGo.remove('west')
+        if (snake['coords'][0][0] - head[0] == 2):
+            if 'north' in canGo:
+                canGo.remove('north')
+        if (snake['coords'][0][1] - head[1] == -2):
+            if 'south' in canGo:
+                canGo.remove('south')
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
@@ -229,7 +228,7 @@ def move():
             otherSnakes.append(snake)
     food = data['food']
     dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth, otherSnakes, food)
-    currMove = dirsCanGo[0]
+    currMove = dirsCanGo[random.randint(0, len(dirsCanGo)-1)]
     data = {'move': currMove, 'taunt': 'meow' }
     ret = json.dumps(data)
     
