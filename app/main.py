@@ -50,8 +50,8 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
         canGo.remove('east')
     print str(canGo)
     #-----Ourselves-----
-    '''
-    for coord in ourSnake.coords:
+
+    for coord in ourSnake['coords']:
         if coord == head:
             continue
         if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
@@ -62,7 +62,7 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
             canGo.remove('north')
         if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
             canGo.remove('west')
-    '''
+
     return canGo
 
 ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
