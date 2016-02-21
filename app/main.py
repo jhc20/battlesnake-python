@@ -22,7 +22,7 @@ Example Recieved Snake Object
 
 '''
 
-def bfs(canGo):
+#def bfs(canGo):
 
 def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
     #if len(ourSnake.coords) == 0:
