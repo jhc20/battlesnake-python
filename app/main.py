@@ -54,14 +54,18 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth ):
     for coord in ourSnake['coords']:
         if coord == head:
             continue
-        if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
-            canGo.remove('south')
         if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
-            canGo.remove('east')
-        if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
-            canGo.remove('north')
+            if 'south' in canGo:
+                canGo.remove('south')
+        if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
+            if 'east' in canGo:
+                canGo.remove('east')
         if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
-            canGo.remove('west')
+            if 'north'  in canGo:
+                canGo.remove('north')
+        if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
+            if 'west' in canGo:
+                canGo.remove('west')
 
     return canGo
 
