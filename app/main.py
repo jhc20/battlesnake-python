@@ -2,9 +2,9 @@ import bottle
 import os
 import json
 import random
+from snake import *
 
-
-''' 
+'''
 Example Recieved Snake Object
 
 {
@@ -122,7 +122,8 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
                 canGo.remove('south')
     return canGo
 
-ourSnakeId = "902f27c7-400a-4316-9672-586bf72bee07"
+ourSnakeId = ""
+ourName = "tyson sucks"
 snakes = []
 
 
@@ -176,7 +177,9 @@ def start():
     # TODO: Do things with data
 
     return {
-        'taunt': 'Lorem Ipsum'
+        'taunt': 'Lorem Ipsum',
+        'name': ourName,
+        'color': '#4099ff'
     }
 
 '''  
@@ -209,14 +212,12 @@ Recieved Move object for /move
 def move():
     data = bottle.request.json
 
-    # TODO: Do things with data
-    
+
     #Step one: Parse Map data
-    
+
     mapWidth = data['width']
-    #print data['width']
-    #print data['height']
-    #print data['snakes']
+    # print data['width']
+    # print data['height']
     
     mapHeight = data['height']
     #snakemake(data['snakes'])
@@ -233,11 +234,15 @@ def move():
     parsedMapData = []
     otherSnakes = []
     for snake in data['snakes']:
-        if snake['id'] == ourSnakeId:
+        if snake['name'] == ourName:
             ourSnake = snake
         else:
             otherSnakes.append(snake)
     food = data['food']
+    print "ourSnakek"
+    print ourSnake
+    print "others"
+    print otherSnakes
     dirsCanGo = directionsCanGo( parsedMapData, ourSnake, mapHeight, mapWidth, otherSnakes, food)
     currMove = dirsCanGo[random.randint(0, len(dirsCanGo)-1)]
     #currMove = dirsCanGo[0]
