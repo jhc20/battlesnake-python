@@ -50,6 +50,8 @@ ourSnakeId = ""
 ourName = "battlesnake-python"
 snakes = []
 
+def Safe(ourSnake, otherSnake):
+    return len(ourSnake) > len(otherSnake)
 
 def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
     # if len(ourSnake.coords) == 0:
@@ -114,34 +116,34 @@ def directionsCanGo(mapdata, ourSnake, mapHeight, mapWidth, otherSnakes, food):
                     canGo.remove('left')
 
     for snake in otherSnakes:
-        if (snake['coords'][0][0] - head[0] == 2) and (snake['coords'][0][1] == head[1]):
+        if (snake['coords'][0][0] - head[0] == 2) and (snake['coords'][0][1] == head[1] and not Safe(ourSnake['coords'], snake['coords'])):
             if 'right' in canGo:
                 canGo.remove('right')
-        if (snake['coords'][0][0] - head[0] == -2) and (snake['coords'][0][1] == head[1]):
+        if (snake['coords'][0][0] - head[0] == -2) and (snake['coords'][0][1] == head[1] and not Safe(ourSnake['coords'], snake['coords'])):
             if 'left' in canGo:
                 canGo.remove('left')
-        if (snake['coords'][0][1] - head[1] == 2) and (snake['coords'][0][0] == head[0]):
+        if (snake['coords'][0][1] - head[1] == 2) and (snake['coords'][0][0] == head[0] and not Safe(ourSnake['coords'], snake['coords'])):
             if 'down' in canGo:
                 canGo.remove('down')
-        if (snake['coords'][0][1] - head[1] == -2) and (snake['coords'][0][0] == head[0]):
+        if (snake['coords'][0][1] - head[1] == -2) and (snake['coords'][0][0] == head[0] and not Safe(ourSnake['coords'], snake['coords'])):
             if 'up' in canGo:
                 canGo.remove('up')
-        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == -1)):
+        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == -1) and not Safe(ourSnake['coords'], snake['coords'])):
             if 'right' in canGo:
                 canGo.remove('right')
             if 'up' in canGo:
                 canGo.remove('up')
-        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == 1)):
+        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == 1) and not Safe(ourSnake['coords'], snake['coords'])):
             if 'right' in canGo:
                 canGo.remove('right')
             if 'down' in canGo:
                 canGo.remove('down')
-        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == -1)):
+        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == -1) and not Safe(ourSnake['coords'], snake['coords'])):
             if 'left' in canGo:
                 canGo.remove('left')
             if 'up' in canGo:
                 canGo.remove('up')
-        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == 1)):
+        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == 1) and not Safe(ourSnake['coords'], snake['coords'])):
             if 'left' in canGo:
                 canGo.remove('left')
             if 'down' in canGo:
