@@ -132,17 +132,17 @@ def static(path):
     return bottle.static_file(path, root='static/')
 
 
-@bottle.get('/')
-def index():
-    #head_url = '%s://%s/static/head.png' % (
-    #    bottle.request.urlparts.scheme,
-    #    bottle.request.urlparts.netloc
-    #)
-
-    return {
-        'color': '#4099ff',
-        'head': "http://i.imgur.com/uajfGft.png"
-    }
+# @bottle.get('/')
+# def index():
+#     #head_url = '%s://%s/static/head.png' % (
+#     #    bottle.request.urlparts.scheme,
+#     #    bottle.request.urlparts.netloc
+#     #)
+#
+#     return {
+#         'color': '#4099ff',
+#         'head': "http://i.imgur.com/uajfGft.png"
+#     }
 
 
 ''' 
@@ -173,13 +173,22 @@ def snakemake(snakes_given):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
+    game_id = data['game_id']
+    board_width = data['width']
+    board_height = data['height']
+
+    head_url = '%s://%s/static/head.png' % (
+        bottle.request.urlparts.scheme,
+        bottle.request.urlparts.netloc
+    )
 
     # TODO: Do things with data
 
     return {
-        'taunt': 'Lorem Ipsum',
-        'name': ourName,
-        'color': '#4099ff'
+        'color': '#00FF00',
+        'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
+        'head_url': head_url,
+        'name': 'battlesnake-python'
     }
 
 '''  
@@ -211,7 +220,6 @@ Recieved Move object for /move
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-
 
     #Step one: Parse Map data
 
@@ -308,15 +316,15 @@ Object revcieved for /end
 '''
 
 
-@bottle.post('/end')
-def end():
-    data = bottle.request.json
-
-    # TODO: Do things with data
-
-    return {
-        'taunt': 'YEEZY YEEZY YEEZY JUST JUMPED OVER JUMPMAN'
-    }
+# @bottle.post('/end')
+# def end():
+#     data = bottle.request.json
+#
+#     # TODO: Do things with data
+#
+#     return {
+#         'taunt': 'YEEZY YEEZY YEEZY JUST JUMPED OVER JUMPMAN'
+#     }
 
 
 # Expose WSGI app (so gunicorn can find it)
