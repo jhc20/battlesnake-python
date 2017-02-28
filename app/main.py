@@ -2,35 +2,14 @@ import bottle
 import os
 import json
 import random
-import datetime
-from snake import *
+import copy
+
+import uuid
+import sys
+
 
 '''
-Example Recieved Snake Object
-
-{
-    "id": "1234-567890-123456-7890",
-    "name": "Well Documented Snake",
-    "status": "alive",
-    "message": "Moved up",
-    "taunt": "Let's rock!",
-    "age": 56,
-    "health": 83,
-    "coords": [ [1, 1], [1, 2], [2, 2] ,]
-    "kills": 4,
-    "food": 12,
-    "gold": 2
-}
-'''
-
-import bottle
-import os
-import json
-import random
-from snake import *
-
-'''
-Example Recieved Snake Object
+Example Received Snake Object
 
 {
     "id": "1234-567890-123456-7890",
@@ -48,144 +27,171 @@ Example Recieved Snake Object
 '''
 
 ourSnakeId = ""
-ourName = "battlesnake-python"
+ourName = str(uuid.uuid4())
 snakes = []
+originalDictionary = {}
 
-def Safe(ourSnake, otherSnake):
-    return len(ourSnake) > len(otherSnake)
+def removeItemFromDictionary(key, dictionary):
+    if not dictionary.get(key, None) is None:
+        del dictionary[key]
 
-def removeUnsafe(head, snake, canGo, ourSnake):
-    if (snake['coords'][0][0] - head[0] == 2) and (
-            snake['coords'][0][1] == head[1] and not Safe(ourSnake['coords'], snake['coords'])):
-        if 'right' in canGo:
-            canGo.remove('right')
-    if (snake['coords'][0][0] - head[0] == -2) and (
-            snake['coords'][0][1] == head[1] and not Safe(ourSnake['coords'], snake['coords'])):
-        if 'left' in canGo:
-            canGo.remove('left')
-    if (snake['coords'][0][1] - head[1] == 2) and (
-            snake['coords'][0][0] == head[0] and not Safe(ourSnake['coords'], snake['coords'])):
-        if 'down' in canGo:
-            canGo.remove('down')
-    if (snake['coords'][0][1] - head[1] == -2) and (
-            snake['coords'][0][0] == head[0] and not Safe(ourSnake['coords'], snake['coords'])):
-        if 'up' in canGo:
-            canGo.remove('up')
-    if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == -1) and not Safe(
-            ourSnake['coords'], snake['coords'])):
-        if 'right' in canGo:
-            canGo.remove('right')
-        if 'up' in canGo:
-            canGo.remove('up')
-    if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == 1) and not Safe(
-            ourSnake['coords'], snake['coords'])):
-        if 'right' in canGo:
-            canGo.remove('right')
-        if 'down' in canGo:
-            canGo.remove('down')
-    if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == -1) and not Safe(
-            ourSnake['coords'], snake['coords'])):
-        if 'left' in canGo:
-            canGo.remove('left')
-        if 'up' in canGo:
-            canGo.remove('up')
-    if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == 1) and not Safe(
-            ourSnake['coords'], snake['coords'])):
-        if 'left' in canGo:
-            canGo.remove('left')
-        if 'down' in canGo:
-            canGo.remove('down')
+def directionalCoordinate(direction, withRespectTo):
+    x = withRespectTo[0]
+    y = withRespectTo[1]
+    if(direction == 'up'):
+        return (x, y-1)
+    elif(direction == 'down'):
+        return (x, y+1)
+    elif(direction == 'right'):
+        return (x+1, y)
+    elif(direction == 'left'):
+        return (x-1, y)
 
-def directionsCanGo(ourSnake, mapHeight, mapWidth, otherSnakes):
-    # if len(ourSnake.coords) == 0:
+def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary):
+    # List all the available directions our snake can go
+    options = ['up', 'left', 'down', 'right']
+    canGo = list(options)
 
-    #    return
-    canGo = ['up', 'left', 'down', 'right']
-    # Code to decide which dirs we can go
+    # Our snakes head
     head = ourSnake['coords'][0]
-    # length = len(ourSnake.coords)
-    # -----WALLS-----
 
-    # if head co-ord x is 0, cant move up
-    if head[1] == 0:
-        canGo.remove('up')
-
-    # if head co-ord x is height-1 cant move down
-    if head[1] == mapHeight - 1:
-        canGo.remove('down')
-
-    # if head co-ord y is 0, cant move left
-    if head[0] == 0:
-        canGo.remove('left')
-
-    # if head co-ord y is  width - 1 cant more right
-    if head[0] == mapWidth - 1:
-        canGo.remove('right')
-    print str(canGo)
-    # -----Ourselves-----
-    del ourSnake['coords'][-1]
-    for coord in ourSnake['coords']:
-        if coord == head:
+    # ----- Other Snakes (Where head is going to go)/ Head collision detection ----
+    for snake in otherSnakes:
+        # Check if we're longer, if so continue
+        if len(snake['coords']) < len(ourSnake['coords']):
             continue
-        if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
-            if 'down' in canGo:
-                canGo.remove('down')
-        if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
+
+        # Else, we have to check if we'd run into them and avoid those directions
+        if (snake['coords'][0][0] - head[0] == 2) and (snake['coords'][0][1] == head[1]):
             if 'right' in canGo:
                 canGo.remove('right')
-        if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
-            if 'up' in canGo:
-                canGo.remove('up')
-        if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
+        if (snake['coords'][0][0] - head[0] == -2) and (snake['coords'][0][1] == head[1]):
             if 'left' in canGo:
                 canGo.remove('left')
+        if (snake['coords'][0][1] - head[1] == 2) and (snake['coords'][0][0] == head[0]):
+            if 'down' in canGo:
+                canGo.remove('down')
+        if (snake['coords'][0][1] - head[1] == -2) and (snake['coords'][0][0] == head[0]):
+            if 'up' in canGo:
+                canGo.remove('up')
+        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == -1)):
+            if 'right' in canGo:
+                canGo.remove('right')
+            if 'up' in canGo:
+                canGo.remove('up')
+        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == 1)):
+            if 'right' in canGo:
+                canGo.remove('right')
+            if 'down' in canGo:
+                canGo.remove('down')
+        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == -1)):
+            if 'left' in canGo:
+                canGo.remove('left')
+            if 'up' in canGo:
+                canGo.remove('up')
+        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == 1)):
+            if 'left' in canGo:
+                canGo.remove('left')
+            if 'down' in canGo:
+                canGo.remove('down')
 
-    # -----Other Snakes -----
-    for snake in otherSnakes:
-        del snake['coords'][-1]
-        for coord in snake['coords']:
-            if (coord[1] - head[1] == 1) and (coord[0] - head[0] == 0):
-                if 'down' in canGo:
-                    canGo.remove('down')
-            if (coord[0] - head[0] == 1) and (coord[1] - head[1] == 0):
-                if 'right' in canGo:
-                    canGo.remove('right')
-            if (coord[1] - head[1] == -1) and (coord[0] - head[0] == 0):
-                if 'up' in canGo:
-                    canGo.remove('up')
-            if (coord[0] - head[0] == -1) and (coord[1] - head[1] == 0):
-                if 'left' in canGo:
-                    canGo.remove('left')
+    for dir in options:
+        if not dir in canGo:
+            removeItemFromDictionary(directionalCoordinate(dir, head), turnDictionary)
 
-    for snake in otherSnakes:
-        removeUnsafe(head, snake, canGo, ourSnake)
+def getDirectionsCanGo(head, turnDictionary):
+    canGo = []
+    x = head[0]
+    y = head[1]
+    right = (x+1, y)
+    left = (x-1, y)
+    up = (x, y-1)
+    down = (x, y+1)
+    if right in turnDictionary.keys():
+        canGo.append('right')
+    if left in turnDictionary.keys():
+        canGo.append('left')
+    if up in turnDictionary.keys():
+        canGo.append('up')
+    if down in turnDictionary.keys():
+        canGo.append('down')
     return canGo
 
-'''
-def snakeStates():
-    if there is enemy snake head near oursnake head
-        if oursnake is bigger
-            head attack state
-        else
-            avoid attack state (will take direction preference according to location of food and location of other snakes)
-    else if there is enemy snake body near oursnake head
-        avoid body state (change directions with preference according to location of food and location of other snakes)
-    else
-        look for food state
-'''
+def getUnvisitedNeighbor(node, otherNodes):
+    x = node[0]
+    y = node[1]
+    right = (x+1, y)
+    left = (x-1, y)
+    up = (x, y-1)
+    down = (x, y+1)
+    if right in otherNodes.keys() and otherNodes[right] == False:
+        return right
+    elif left in otherNodes.keys() and otherNodes[left] == False:
+        return left
+    elif up in otherNodes.keys() and otherNodes[up] == False:
+        return up
+    elif down in otherNodes.keys() and otherNodes[down] == False:
+        return down
+    else:
+        return None
+
+def bfs(rootNode, otherNodes):
+    queue = []
+    queue.append(rootNode)
+    otherNodes[rootNode] = True
+    room = 0
+    while len(queue) > 0:
+        node = queue.pop(0)
+        child = getUnvisitedNeighbor(node, otherNodes)
+        while not child == None:
+            otherNodes[child] = True
+            queue.append(child)
+            child = getUnvisitedNeighbor(node, otherNodes)
+            room = room + 1
+
+    return room
+
+def getClosestFood(dirsFromHead, head, foods):
+    head_x = head[0]
+    head_y = head[1]
+    minDist = 1000000
+    minFood = []
+    for food in foods:
+        food_x = food[0]
+        food_y = food[1]
+        temp = abs(food_x - head_x) + abs(food_y - head_y)
+        if temp < minDist:
+            minDist = temp
+            minFood = food
+
+    minDist = 100000
+    minDirs = []
+    #minDir = dirsFromHead[random.randint(0, len(dirsFromHead)-1)]
+    for dir in dirsFromHead:
+        coords = directionalCoordinate(dir, head)
+        x = coords[0]
+        y = coords[1]
+        min_food_x = minFood[0]
+        min_food_y = minFood[1]
+        temp = abs(min_food_x - x) + abs(min_food_y - y)
+        if temp < minDist:
+            minDist = temp
+            minDirs = [dir]
+        elif temp == minDist:
+            minDirs.append(dir)
+
+    #print("Min Dirs: ")
+    #print(minDirs)
+    if len(minDirs) == 1:
+        return minDirs[0]
+    else:
+        return minDirs[random.randint(0, len(minDirs)-1)]
+
+
 
 @bottle.route('/static/<path:path>')
 def static(path):
     return bottle.static_file(path, root='static/')
-
-
-def snakemake(snakes_given):
-    for snake in snakes_given:
-        temp = Snake(snake['id'], snake['name'], snake['status'], snake['message'], snake['taunt'], snake['age'],
-                     snake['health'], snake['coords'], snake['kills'])
-        snakes.append(temp)
-        # print "Made snake coords: " + str(temp.coords)
-
 
 '''
 Object recieved for /start
@@ -198,12 +204,14 @@ Object recieved for /start
     "snakes": [
         <Snake Object>, <Snake Object>, ...
     ],
-    "food": [],
-    "walls": [],  // Advanced Only
-    "gold": []    // Advanced Only
+    "food": []
 }
 '''
 
+def generateDictionary(board_width, board_height):
+    for y in xrange(board_height):
+        for x in xrange(board_width):
+            originalDictionary[(x,y)] = False
 
 @bottle.post('/start')
 def start():
@@ -211,6 +219,10 @@ def start():
     game_id = data['game_id']
     board_width = data['width']
     board_height = data['height']
+
+    #initialize dictionary
+    #print("Start called")
+    generateDictionary(board_width, board_height)
 
     head_url = '%s://%s/static/head.png' % (
         bottle.request.urlparts.scheme,
@@ -223,7 +235,7 @@ def start():
         'color': '#00FF00',
         'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
         'head_url': head_url,
-        'name': 'battlesnake-python'
+        'name': ourName
     }
 
 
@@ -245,65 +257,106 @@ Recieved Move object for /move
 
 '''
 
-def findFood(ourSnake, mapHeight, mapWidth, otherSnakes, food):
-    map = []
-    for i in xrange(mapHeight):
-        temp = []
-        for j in xrange(mapWidth):
-            temp.append(1)
-        map.append(temp)
-    for body in ourSnake['coords']:
-        map[body[0]][body[1]] = 0
-    for snake in otherSnakes:
-        for body in snake['coords']:
-            map[body[0]][body[1]] = 0
-    for f in food:
-        map[f[0]][f[1]] = 2
-
-    #todo
-    return move
-
 @bottle.post('/move')
 def move():
-    startime = datetime.datetime.now()
     data = bottle.request.json
 
-    # Step one: Parse Map data
-
     mapWidth = data['width']
-
     mapHeight = data['height']
-    # snakemake(data['snakes'])
-    # foodmake(data['food'])
 
-
-    # currTaunt = taunt.gettaunt().strip()
     currTaunt = 'meow'
-    # currMove = 'up'
-    # data = {'move': currMove, 'taunt': currTaunt}
-    # ret = json.dumps(data)
+
+    if(len(originalDictionary) < 1):
+        generateDictionary(mapWidth, mapHeight)
+
+    # make dictionary for open spaces this turn
+    turnDictionary = originalDictionary.copy()
+
+    #print("Turn dictionary: ")
+    #print(turnDictionary)
+
+    # remove spaces that are un available to move to
+    #print("Snake data: ")
+    #print(data['snakes'])
+
 
     ourSnake = {}
-    parsedMapData = []
     otherSnakes = []
     for snake in data['snakes']:
+        #print("snake name:")
+        #print(snake['name'])
+        #print("our snake name:")
+        #print(ourName)
         if snake['name'] == ourName:
             ourSnake = snake
+            #print("our snake: ")
+            #print(ourSnake)
         else:
             otherSnakes.append(snake)
-    food = data['food']
-    dirsCanGo = directionsCanGo(ourSnake, mapHeight, mapWidth, otherSnakes)
-    currMove = findFood(ourSnake, mapHeight, mapWidth, otherSnakes, food)#dirsCanGo[random.randint(0, len(dirsCanGo) - 1)]
-    # currMove = dirsCanGo[0]
-    data = {'move': currMove, 'taunt': 'meow'}
-    ret = json.dumps(data)
-    endtime = datetime.datetime.now()
-    print (endtime - startime).total_seconds() * 1000
-    return ret
+        for coord in snake['coords'][:-1]:
+            #print("coords of snake:")
+            #print(coord)
+            x = coord[0]
+            y = coord[1]
+            if not turnDictionary.get((x, y), None) is None:
+                del turnDictionary[(x, y)]
+    #print(len(turnDictionary))
+    headOfOurSnake = ourSnake['coords'][0]
 
+    #print("length before remove head collision")
+    #print(len(turnDictionary))
+    removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary)
+    #print("length after remove head collision")
+    #print(len(turnDictionary))
+
+
+    currMove = "up"
+    directionsCanGo = getDirectionsCanGo(headOfOurSnake, turnDictionary)
+    #print("DirectionsCanGo")
+    #print(directionsCanGo)
+    if len(directionsCanGo) >= 2:
+        #print("More then one move to choose from")
+        maxSpaces = 0
+        maxSpacesDir = 'up'
+        dirsAndValues = {}
+        for dir in directionsCanGo:
+            availableSpotNodes = turnDictionary.copy()
+            rootNode = directionalCoordinate(dir, headOfOurSnake)
+            temp = bfs(rootNode, availableSpotNodes)
+            #print("Room from bfs for dir -- " + dir + " -- :")
+            #print(temp)
+            dirsAndValues[dir] = temp
+            if(temp > maxSpaces):
+                maxSpaces = temp
+                maxSpacesDir = dir
+        dirsThatHaveMax = []
+        for dir in dirsAndValues:
+            #print("Dir in dirs and values:")
+            #print(dir)
+            if dirsAndValues[dir] == maxSpaces:
+                dirsThatHaveMax.append(dir)
+        if len(dirsThatHaveMax) == 1:
+            currMove = maxSpacesDir
+        else:
+            currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'])
+    elif len(directionsCanGo) == 1:
+        #print("One move to choose from")
+        currMove = directionsCanGo[0]
+    else:
+        #print("No moves to choose from")
+        currMove = 'up'
+    #print("CurrMove")
+    #print (currMove)
+    data = {'move': currMove, 'taunt': currTaunt}
+    ret = json.dumps(data)
+
+    return ret
 
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
 if __name__ == '__main__':
-    bottle.run(application, host=os.getenv('IP', '0.0.0.0'), port=os.getenv('PORT', '8080'))
+    port = '8080'
+    if len(sys.argv) > 1:
+        port = sys.argv[1]
+    bottle.run(application, host=os.getenv('IP', '0.0.0.0'), port=os.getenv('PORT', port))
