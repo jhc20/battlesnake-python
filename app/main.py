@@ -31,9 +31,11 @@ ourName = str(uuid.uuid4())
 snakes = []
 originalDictionary = {}
 
+
 def removeItemFromDictionary(key, dictionary):
     if not dictionary.get(key, None) is None:
         del dictionary[key]
+
 
 def directionalCoordinate(direction, withRespectTo):
     x = withRespectTo[0]
@@ -46,6 +48,7 @@ def directionalCoordinate(direction, withRespectTo):
         return (x+1, y)
     elif(direction == 'left'):
         return (x-1, y)
+
 
 def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary):
     # List all the available directions our snake can go
@@ -99,6 +102,7 @@ def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary):
         if not dir in canGo:
             removeItemFromDictionary(directionalCoordinate(dir, head), turnDictionary)
 
+
 def getDirectionsCanGo(head, turnDictionary):
     canGo = []
     x = head[0]
@@ -116,6 +120,7 @@ def getDirectionsCanGo(head, turnDictionary):
     if down in turnDictionary.keys():
         canGo.append('down')
     return canGo
+
 
 def getUnvisitedNeighbor(node, otherNodes):
     x = node[0]
@@ -135,6 +140,7 @@ def getUnvisitedNeighbor(node, otherNodes):
     else:
         return None
 
+
 def bfs(rootNode, otherNodes):
     queue = []
     queue.append(rootNode)
@@ -151,41 +157,74 @@ def bfs(rootNode, otherNodes):
 
     return room
 
-def getClosestFood(dirsFromHead, head, foods):
-    head_x = head[0]
-    head_y = head[1]
-    minDist = 1000000
-    minFood = []
-    for food in foods:
-        food_x = food[0]
-        food_y = food[1]
-        temp = abs(food_x - head_x) + abs(food_y - head_y)
-        if temp < minDist:
-            minDist = temp
-            minFood = food
 
-    minDist = 100000
-    minDirs = []
-    #minDir = dirsFromHead[random.randint(0, len(dirsFromHead)-1)]
-    for dir in dirsFromHead:
-        coords = directionalCoordinate(dir, head)
-        x = coords[0]
-        y = coords[1]
-        min_food_x = minFood[0]
-        min_food_y = minFood[1]
-        temp = abs(min_food_x - x) + abs(min_food_y - y)
-        if temp < minDist:
-            minDist = temp
-            minDirs = [dir]
-        elif temp == minDist:
-            minDirs.append(dir)
+def determineDirection(node, head):
+    if list(head)[0] - list(node)[0] == 1:
+        return "up"
+    if list(head)[0] - list(node)[0] == -1:
+        return "down"
+    if list(head)[1] - list(node)[1] == 1:
+        return "right"
+    if list(head)[1] - list(node)[1] == -1:
+        return "down"
 
-    #print("Min Dirs: ")
-    #print(minDirs)
-    if len(minDirs) == 1:
-        return minDirs[0]
-    else:
-        return minDirs[random.randint(0, len(minDirs)-1)]
+
+def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
+    foods = (tuple(x) for x in foods)
+    queue = []
+    queue.append(head)
+    otherNodes[head] = True
+    room = 0
+    while len(queue) > 0:
+        node = queue.pop(0)
+        childNode = getUnvisitedNeighbor(node, otherNodes)
+        while not childNode == None:
+            if childNode in foods:
+                while not parentDictionary[node] == head:
+                    node = parentDictionary[node]
+                return determineDirection(node, head)
+            otherNodes[childNode] = True
+            queue.append(childNode)
+            parentDictionary[childNode] = node
+            childNode = getUnvisitedNeighbor(node, otherNodes)
+            room = room + 1
+
+
+# def getClosestFood(dirsFromHead, head, foods):
+#     head_x = head[0]
+#     head_y = head[1]
+#     minDist = 1000000
+#     minFood = []
+#     for food in foods:
+#         food_x = food[0]
+#         food_y = food[1]
+#         temp = abs(food_x - head_x) + abs(food_y - head_y)
+#         if temp < minDist:
+#             minDist = temp
+#             minFood = food
+#
+#     minDist = 100000
+#     minDirs = []
+#     #minDir = dirsFromHead[random.randint(0, len(dirsFromHead)-1)]
+#     for dir in dirsFromHead:
+#         coords = directionalCoordinate(dir, head)
+#         x = coords[0]
+#         y = coords[1]
+#         min_food_x = minFood[0]
+#         min_food_y = minFood[1]
+#         temp = abs(min_food_x - x) + abs(min_food_y - y)
+#         if temp < minDist:
+#             minDist = temp
+#             minDirs = [dir]
+#         elif temp == minDist:
+#             minDirs.append(dir)
+#
+#     #print("Min Dirs: ")
+#     #print(minDirs)
+#     if len(minDirs) == 1:
+#         return minDirs[0]
+#     else:
+#         return minDirs[random.randint(0, len(minDirs)-1)]
 
 
 
@@ -208,10 +247,12 @@ Object recieved for /start
 }
 '''
 
+
 def generateDictionary(board_width, board_height):
     for y in xrange(board_height):
         for x in xrange(board_width):
             originalDictionary[(x,y)] = False
+
 
 @bottle.post('/start')
 def start():
@@ -256,6 +297,7 @@ Recieved Move object for /move
 }
 
 '''
+
 
 @bottle.post('/move')
 def move():
@@ -338,7 +380,7 @@ def move():
         if len(dirsThatHaveMax) == 1:
             currMove = maxSpacesDir
         else:
-            currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'])
+            currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), turnDictionary.copy())
     elif len(directionsCanGo) == 1:
         #print("One move to choose from")
         currMove = directionsCanGo[0]
