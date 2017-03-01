@@ -138,6 +138,7 @@ def getUnvisitedNeighbor(node, otherNodes):
     elif down in otherNodes.keys() and otherNodes[down] == False:
         return down
     else:
+        # print "pooooo"
         return None
 
 
@@ -159,34 +160,37 @@ def bfs(rootNode, otherNodes):
 
 
 def determineDirection(node, head):
-    if list(head)[0] - list(node)[0] == 1:
-        return "up"
-    if list(head)[0] - list(node)[0] == -1:
-        return "down"
     if list(head)[1] - list(node)[1] == 1:
-        return "right"
+        return "up"
     if list(head)[1] - list(node)[1] == -1:
         return "down"
+    if list(head)[0] - list(node)[0] == 1:
+        return "left"
+    if list(head)[0] - list(node)[0] == -1:
+        return "right"
 
 
 def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
-    foods = (tuple(x) for x in foods)
+    # foods = (tuple(x) for x in foods)
     queue = []
     queue.append(head)
-    otherNodes[head] = True
+    otherNodes[tuple(head)] = True
     room = 0
     while len(queue) > 0:
         node = queue.pop(0)
         childNode = getUnvisitedNeighbor(node, otherNodes)
         while not childNode == None:
-            if childNode in foods:
-                while not parentDictionary[node] == head:
+            #change childnode to just node
+            if list(childNode) in foods:
+                while not (parentDictionary[node] == head):
                     node = parentDictionary[node]
+                print(determineDirection(node, head))
                 return determineDirection(node, head)
             otherNodes[childNode] = True
             queue.append(childNode)
             parentDictionary[childNode] = node
             childNode = getUnvisitedNeighbor(node, otherNodes)
+            #print(childNode)
             room = room + 1
 
 
@@ -248,7 +252,15 @@ Object recieved for /start
 '''
 
 
-def generateDictionary(board_width, board_height):
+def generateDictionaryTuple(board_width, board_height):
+    tempDictionary = {}
+    for y in xrange(board_height):
+        for x in xrange(board_width):
+            tempDictionary[(x,y)] = ()
+    return tempDictionary
+
+
+def generateDictionaryTF(board_width, board_height):
     for y in xrange(board_height):
         for x in xrange(board_width):
             originalDictionary[(x,y)] = False
@@ -263,7 +275,7 @@ def start():
 
     #initialize dictionary
     #print("Start called")
-    generateDictionary(board_width, board_height)
+    generateDictionaryTF(board_width, board_height)
 
     head_url = '%s://%s/static/head.png' % (
         bottle.request.urlparts.scheme,
@@ -309,7 +321,7 @@ def move():
     currTaunt = 'meow'
 
     if(len(originalDictionary) < 1):
-        generateDictionary(mapWidth, mapHeight)
+        generateDictionaryTF(mapWidth, mapHeight)
 
     # make dictionary for open spaces this turn
     turnDictionary = originalDictionary.copy()
@@ -380,12 +392,13 @@ def move():
         if len(dirsThatHaveMax) == 1:
             currMove = maxSpacesDir
         else:
-            currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), turnDictionary.copy())
+            print("getting closest")
+
+            currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
     elif len(directionsCanGo) == 1:
         #print("One move to choose from")
         currMove = directionsCanGo[0]
     else:
-        #print("No moves to choose from")
         currMove = 'up'
     #print("CurrMove")
     #print (currMove)
