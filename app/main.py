@@ -175,23 +175,20 @@ def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
     queue = []
     queue.append(head)
     otherNodes[tuple(head)] = True
-    room = 0
     while len(queue) > 0:
         node = queue.pop(0)
+        if list(node) in foods:
+            while not (parentDictionary[node] == head):
+                node = parentDictionary[node]
+            if determineDirection(node, head) in dirsFromHead:
+                print(determineDirection(node, head))
+                return determineDirection(node, head)
         childNode = getUnvisitedNeighbor(node, otherNodes)
         while not childNode == None:
             parentDictionary[childNode] = node
-            if list(node) in foods:
-                while not (parentDictionary[node] == head):
-                    node = parentDictionary[node]
-                print(determineDirection(node, head))
-                if determineDirection in dirsFromHead:
-                    return determineDirection(node, head)
             otherNodes[childNode] = True
             queue.append(childNode)
             childNode = getUnvisitedNeighbor(node, otherNodes)
-            #print(childNode)
-            room = room + 1
 
 
 
@@ -358,6 +355,9 @@ def move():
             print("getting closest")
 
             currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
+            if currMove == None:
+                #TODO need to change to space filling algorithm
+                currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
     elif len(directionsCanGo) == 1:
         #print("One move to choose from")
         currMove = directionsCanGo[0]
