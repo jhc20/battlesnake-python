@@ -180,55 +180,18 @@ def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
         node = queue.pop(0)
         childNode = getUnvisitedNeighbor(node, otherNodes)
         while not childNode == None:
-            #change childnode to just node
+            parentDictionary[childNode] = node
             if list(node) in foods:
                 while not (parentDictionary[node] == head):
                     node = parentDictionary[node]
                 print(determineDirection(node, head))
-                return determineDirection(node, head)
+                if determineDirection in dirsFromHead:
+                    return determineDirection(node, head)
             otherNodes[childNode] = True
             queue.append(childNode)
-            parentDictionary[childNode] = node
             childNode = getUnvisitedNeighbor(node, otherNodes)
             #print(childNode)
             room = room + 1
-
-
-# def getClosestFood(dirsFromHead, head, foods):
-#     head_x = head[0]
-#     head_y = head[1]
-#     minDist = 1000000
-#     minFood = []
-#     for food in foods:
-#         food_x = food[0]
-#         food_y = food[1]
-#         temp = abs(food_x - head_x) + abs(food_y - head_y)
-#         if temp < minDist:
-#             minDist = temp
-#             minFood = food
-#
-#     minDist = 100000
-#     minDirs = []
-#     #minDir = dirsFromHead[random.randint(0, len(dirsFromHead)-1)]
-#     for dir in dirsFromHead:
-#         coords = directionalCoordinate(dir, head)
-#         x = coords[0]
-#         y = coords[1]
-#         min_food_x = minFood[0]
-#         min_food_y = minFood[1]
-#         temp = abs(min_food_x - x) + abs(min_food_y - y)
-#         if temp < minDist:
-#             minDist = temp
-#             minDirs = [dir]
-#         elif temp == minDist:
-#             minDirs.append(dir)
-#
-#     #print("Min Dirs: ")
-#     #print(minDirs)
-#     if len(minDirs) == 1:
-#         return minDirs[0]
-#     else:
-#         return minDirs[random.randint(0, len(minDirs)-1)]
 
 
 
