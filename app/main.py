@@ -181,7 +181,7 @@ def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
         childNode = getUnvisitedNeighbor(node, otherNodes)
         while not childNode == None:
             #change childnode to just node
-            if list(childNode) in foods:
+            if list(node) in foods:
                 while not (parentDictionary[node] == head):
                     node = parentDictionary[node]
                 print(determineDirection(node, head))
