@@ -28,7 +28,6 @@ Example Received Snake Object
 
 ourSnakeId = ""
 ourName = str(uuid.uuid4())
-snakes = []
 originalDictionary = {}
 
 
@@ -50,11 +49,7 @@ def directionalCoordinate(direction, withRespectTo):
         return (x-1, y)
 
 
-def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary):
-    # List all the available directions our snake can go
-    options = ['up', 'left', 'down', 'right']
-    canGo = list(options)
-
+def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary, heuristics):
     # Our snakes head
     head = ourSnake['coords'][0]
 
@@ -65,42 +60,23 @@ def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary):
             continue
 
         # Else, we have to check if we'd run into them and avoid those directions
-        if (snake['coords'][0][0] - head[0] == 2) and (snake['coords'][0][1] == head[1]):
-            if 'right' in canGo:
-                canGo.remove('right')
-        if (snake['coords'][0][0] - head[0] == -2) and (snake['coords'][0][1] == head[1]):
-            if 'left' in canGo:
-                canGo.remove('left')
-        if (snake['coords'][0][1] - head[1] == 2) and (snake['coords'][0][0] == head[0]):
-            if 'down' in canGo:
-                canGo.remove('down')
-        if (snake['coords'][0][1] - head[1] == -2) and (snake['coords'][0][0] == head[0]):
-            if 'up' in canGo:
-                canGo.remove('up')
-        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == -1)):
-            if 'right' in canGo:
-                canGo.remove('right')
-            if 'up' in canGo:
-                canGo.remove('up')
-        if ((snake['coords'][0][0] - head[0] == 1) and (snake['coords'][0][1] - head[1] == 1)):
-            if 'right' in canGo:
-                canGo.remove('right')
-            if 'down' in canGo:
-                canGo.remove('down')
-        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == -1)):
-            if 'left' in canGo:
-                canGo.remove('left')
-            if 'up' in canGo:
-                canGo.remove('up')
-        if ((snake['coords'][0][0] - head[0] == -1) and (snake['coords'][0][1] - head[1] == 1)):
-            if 'left' in canGo:
-                canGo.remove('left')
-            if 'down' in canGo:
-                canGo.remove('down')
+        dirsCouldCollideIn(head,snake['coords'][0], heuristics, turnDictionary)
 
-    for dir in options:
-        if not dir in canGo:
-            removeItemFromDictionary(directionalCoordinate(dir, head), turnDictionary)
+
+def dirsCouldCollideIn(ourSnakeHead, otherSnakeHead, dirHeuristic, turnDictionary):
+    dirsOurSnakeCanGo = getDirectionsCanGo(ourSnakeHead, turnDictionary)
+    dirsOtherSnakeCanGo = getDirectionsCanGo(otherSnakeHead, turnDictionary)
+    numberOfMovesTheyHave = len(dirsOurSnakeCanGo)
+
+    for ourDir in dirsOurSnakeCanGo:
+        ourCoord = directionalCoordinate(ourDir, ourSnakeHead)
+        for theirDirs in dirsOtherSnakeCanGo:
+            theirCoord = directionalCoordinate(theirDirs, otherSnakeHead)
+            if ourCoord == theirCoord:
+                if numberOfMovesTheyHave > 1:
+                    setHeuristicValue(dirHeuristic, ourDir, 5)
+                elif numberOfMovesTheyHave == 1:
+                    setHeuristicValue(dirHeuristic, ourDir, 6)
 
 
 def getDirectionsCanGo(head, turnDictionary):
@@ -138,7 +114,6 @@ def getUnvisitedNeighbor(node, otherNodes):
     elif down in otherNodes.keys() and otherNodes[down] == False:
         return down
     else:
-        # print "pooooo"
         return None
 
 
@@ -311,7 +286,21 @@ Recieved Move object for /move
 }
 
 '''
+# For setting the heuristic entries, we only assign higher values
+def setHeuristicValue(heuristic, key, value):
+    if heuristic.get(key, None) is None:
+        heuristic[key] = value
+    elif heuristic[key] < value:
+        heuristic[key] = value
 
+def getMinimalHeuristicValue(heuristic):
+    min = 10
+    minDir = ''
+    for dir in heuristic:
+        if heuristic[dir] < min:
+            min = heuristic[dir]
+            minDir = dir
+    return minDir
 
 @bottle.post('/move')
 def move():
@@ -325,53 +314,35 @@ def move():
     if(len(originalDictionary) < 1):
         generateDictionaryTF(mapWidth, mapHeight)
 
-    # make dictionary for open spaces this turn
     turnDictionary = originalDictionary.copy()
-
-    #print("Turn dictionary: ")
-    #print(turnDictionary)
-
-    # remove spaces that are un available to move to
-    #print("Snake data: ")
-    #print(data['snakes'])
-
 
     ourSnake = {}
     otherSnakes = []
+
+    # Remove spots that are completely unavailable
     for snake in data['snakes']:
-        #print("snake name:")
-        #print(snake['name'])
-        #print("our snake name:")
-        #print(ourName)
         if snake['name'] == ourName:
             ourSnake = snake
-            #print("our snake: ")
-            #print(ourSnake)
         else:
             otherSnakes.append(snake)
         for coord in snake['coords'][:-1]:
-            #print("coords of snake:")
-            #print(coord)
             x = coord[0]
             y = coord[1]
             if not turnDictionary.get((x, y), None) is None:
                 del turnDictionary[(x, y)]
-    #print(len(turnDictionary))
+
     headOfOurSnake = ourSnake['coords'][0]
 
-    #print("length before remove head collision")
-    #print(len(turnDictionary))
-    removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary)
-    #print("length after remove head collision")
-    #print(len(turnDictionary))
+    directionsCanGo = getDirectionsCanGo(headOfOurSnake, turnDictionary)
 
+    directionHeuristics = {}
+
+
+    removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary, directionHeuristics)
 
     currMove = "up"
-    directionsCanGo = getDirectionsCanGo(headOfOurSnake, turnDictionary)
-    #print("DirectionsCanGo")
-    #print(directionsCanGo)
+
     if len(directionsCanGo) >= 2:
-        #print("More then one move to choose from")
         maxSpaces = 0
         maxSpacesDir = 'up'
         dirsAndValues = {}
@@ -379,39 +350,38 @@ def move():
             availableSpotNodes = turnDictionary.copy()
             rootNode = directionalCoordinate(dir, headOfOurSnake)
             temp = bfs(rootNode, availableSpotNodes)
-            #print("Room from bfs for dir -- " + dir + " -- :")
-            #print(temp)
             dirsAndValues[dir] = temp
             if(temp > maxSpaces):
                 maxSpaces = temp
                 maxSpacesDir = dir
         dirsThatHaveMax = []
         for dir in dirsAndValues:
-            #print("Dir in dirs and values:")
-            #print(dir)
             if dirsAndValues[dir] == maxSpaces:
                 dirsThatHaveMax.append(dir)
         if len(dirsThatHaveMax) == 1:
             currMove = maxSpacesDir
         else:
-            print("getting closest")
-
-            currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
-            if currMove == None:
+            # Here we have multiple choices which offer the same amount of spaces
+            # First look at the direction that offers the closest food
+            foodDir = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
+            if foodDir == None:
                 print("Chasing Tail")
                 #TODO need to change to space filling algorithm
-                currMove = ButtFirstSearch(dirsThatHaveMax, headOfOurSnake, ourSnake['coords'][-1], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
-                if currMove == None:
+                buttFirstDir = ButtFirstSearch(dirsThatHaveMax, headOfOurSnake, ourSnake['coords'][-1], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
+                if buttFirstDir == None:
                     print("Using Space")
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
-                    currMove = wallHump(dirsThatHaveMax, headOfOurSnake, turnDictionary.copy())
+                    wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake, turnDictionary.copy())
+                    setHeuristicValue(directionHeuristics, wallHumpDir, 2)
+                else:
+                    setHeuristicValue(directionHeuristics, buttFirstDir, 3)
+            else:
+                setHeuristicValue(directionHeuristics, foodDir, 2)
+            currMove = getMinimalHeuristicValue(directionHeuristics)
     elif len(directionsCanGo) == 1:
-        #print("One move to choose from")
         currMove = directionsCanGo[0]
     else:
         currMove = 'up'
-    #print("CurrMove")
-    #print (currMove)
     data = {'move': currMove, 'taunt': currTaunt}
     ret = json.dumps(data)
 
