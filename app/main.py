@@ -190,6 +190,7 @@ def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
             childNode = getUnvisitedNeighbor(node, otherNodes)
 
 
+#chase Tail
 def ButtFirstSearch(dirsFromHead, head, tail, otherNodes, parentDictionary):
     queue = []
     queue.append(head)
@@ -208,6 +209,29 @@ def ButtFirstSearch(dirsFromHead, head, tail, otherNodes, parentDictionary):
             otherNodes[childNode] = True
             queue.append(childNode)
             childNode = getUnvisitedNeighbor(node, otherNodes)
+
+
+def getSpacesAround(dir, start, otherNodes):
+    count = 0
+    while getUnvisitedNeighbor(directionalCoordinate(dir, start), otherNodes) is not None:
+        count += 1
+    return count
+
+
+#This can probably be cleaned up and written better, but the basic idea is to get spaces with 2 edges first otherwise 1
+def wallHump(dirsFromHead, head, otherNodes):
+    dirMap = {}
+    for dir in dirsFromHead:
+        dirMap[dir] = len(getDirectionsCanGo(directionalCoordinate(dir, head), otherNodes))#getSpacesAround(dir, start, otherNodes)
+    for dir in dirMap:
+        if dirMap[dir] == 1:#2:
+            return dir
+    for dir in dirMap:
+        if dirMap[dir] == 2:#1:
+            return dir
+    for dir in dirMap:
+        if dirMap[dir] == 3:#3:
+            return dir
 
 
 @bottle.route('/static/<path:path>')
@@ -374,12 +398,13 @@ def move():
 
             currMove = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
             if currMove == None:
+                print("Chasing Tail")
                 #TODO need to change to space filling algorithm
-                # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
                 currMove = ButtFirstSearch(dirsThatHaveMax, headOfOurSnake, ourSnake['coords'][-1], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
                 if currMove == None:
-                    currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
-                    # currMove = wallHump()
+                    print("Using Space")
+                    # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
+                    currMove = wallHump(dirsThatHaveMax, headOfOurSnake, turnDictionary.copy())
     elif len(directionsCanGo) == 1:
         #print("One move to choose from")
         currMove = directionsCanGo[0]
