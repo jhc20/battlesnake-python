@@ -42,8 +42,11 @@ DANGER = 5          # complete (have to move head-to-head with another snake)
 CERTAIN_DEATH = 6   # surrounded by walls (never pick)
 
 ourSnakeId = ""
-ourName = str(uuid.uuid4())
+ourName = "Jeff"
+#ourName = str(uuid.uuid4())
 originalDictionary = {}
+tauntList = ['with', 'Jeff', 'prepare', 'for', 'death!', 'Wrestle']
+
 
 
 def removeItemFromDictionary(key, dictionary):
@@ -266,20 +269,14 @@ def start():
     board_width = data['width']
     board_height = data['height']
 
-    #initialize dictionary
-    #print("Start called")
-    generateDictionaryTF(board_width, board_height)
-
-    head_url = '%s://%s/static/head.png' % (
+    head_url = '%s://%s/static/head.gif' % (
         bottle.request.urlparts.scheme,
         bottle.request.urlparts.netloc
     )
 
-    # TODO: Do things with data
-
     return {
-        'color': '#00FF00',
-        'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
+        'color': '#FFA500',
+        'taunt': 'Wrestle',
         'head_url': head_url,
         'name': ourName
     }
@@ -426,13 +423,18 @@ def move():
     data = {'move': currMove, 'taunt': currTaunt}
     ret = json.dumps(data)
 
-    return ret
+    return {
+        'move': currMove,
+        'taunt': tauntGenerator()
+    }
+
+def tauntGenerator():
+    currentTaunt = tauntList.pop(0)
+    tauntList.append(currentTaunt)
+    return currentTaunt
 
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
 if __name__ == '__main__':
-    port = '8080'
-    if len(sys.argv) > 1:
-        port = sys.argv[1]
-    bottle.run(application, host=os.getenv('IP', '0.0.0.0'), port=os.getenv('PORT', port))
+    bottle.run(application, host=os.getenv('IP', '0.0.0.0'), port=os.getenv('PORT', '8080'))
