@@ -26,6 +26,21 @@ Example Received Snake Object
 }
 '''
 
+# Safe kill = 1
+# Food = 2
+# Open = 3
+# Next to wall = 4
+# Danger = 5
+# Certain Death = 6
+
+# Used around getDirectionsCanGo() function
+SAFE_KILL = 1       # ToDo (cut off the other snake)
+FOOD = 2            # complete
+OPEN = 3            # complete
+NEXT_TO_WALL = 4    # ToDo (use current position in relation to map size)
+DANGER = 5          # complete (have to move head-to-head with another snake)
+CERTAIN_DEATH = 6   # surrounded by walls (never pick)
+
 ourSnakeId = ""
 ourName = str(uuid.uuid4())
 originalDictionary = {}
@@ -36,6 +51,7 @@ def removeItemFromDictionary(key, dictionary):
         del dictionary[key]
 
 
+# gives number for co-ord, ex (0, 0) top L
 def directionalCoordinate(direction, withRespectTo):
     x = withRespectTo[0]
     y = withRespectTo[1]
@@ -165,7 +181,7 @@ def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
             childNode = getUnvisitedNeighbor(node, otherNodes)
 
 
-#chase Tail
+# our snake chases its own Tail
 def ButtFirstSearch(dirsFromHead, head, tail, otherNodes, parentDictionary):
     queue = []
     queue.append(head)
@@ -306,11 +322,13 @@ def getMinimalHeuristicValue(heuristic):
 def move():
     data = bottle.request.json
 
+    # Actual board that snakes play on
     mapWidth = data['width']
     mapHeight = data['height']
 
     currTaunt = 'meow'
 
+    # True/False for every spot on the board for visited nodes in BFS
     if(len(originalDictionary) < 1):
         generateDictionaryTF(mapWidth, mapHeight)
 
@@ -320,11 +338,14 @@ def move():
     otherSnakes = []
 
     # Remove spots that are completely unavailable
+    # Makes list for other snakes by looking at all snakes with name != ours
     for snake in data['snakes']:
         if snake['name'] == ourName:
             ourSnake = snake
         else:
             otherSnakes.append(snake)
+        # removes all snake bodies/tail (not head) from list of 
+        # possible co-ordinates 
         for coord in snake['coords'][:-1]:
             x = coord[0]
             y = coord[1]
@@ -332,20 +353,23 @@ def move():
                 del turnDictionary[(x, y)]
 
     headOfOurSnake = ourSnake['coords'][0]
-
+    # dictionary of all 4 directions
     directionsCanGo = getDirectionsCanGo(headOfOurSnake, turnDictionary)
-
+    # dictionary holding all possible directions in form:
+    # [direction, heuristicValue]
     directionHeuristics = {}
-
-
-    removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary, directionHeuristics)
+    # set collision directions == 5 (Danger)
+    removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary, 
+                          directionHeuristics)
 
     currMove = "up"
-
+    # Set heuristic values if they need to be found
+    # sets collisions to == CERTAIN_DEATH
     if len(directionsCanGo) >= 2:
         maxSpaces = 0
         maxSpacesDir = 'up'
         dirsAndValues = {}
+        # find direction that gives largest/most open area
         for dir in directionsCanGo:
             availableSpotNodes = turnDictionary.copy()
             rootNode = directionalCoordinate(dir, headOfOurSnake)
@@ -358,30 +382,47 @@ def move():
         for dir in dirsAndValues:
             if dirsAndValues[dir] == maxSpaces:
                 dirsThatHaveMax.append(dir)
+        # multiple directions have the best heuristic value
         if len(dirsThatHaveMax) == 1:
             currMove = maxSpacesDir
+        # check for nearest food since we have established there is open space
         else:
             # Here we have multiple choices which offer the same amount of spaces
             # First look at the direction that offers the closest food
-            foodDir = getClosestFood(dirsThatHaveMax, headOfOurSnake, data['food'], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
+            foodDir = getClosestFood(dirsThatHaveMax, 
+                                     headOfOurSnake, 
+                                     data['food'], 
+                                     turnDictionary.copy(), 
+                                     generateDictionaryTuple(
+                                            mapHeight, mapWidth))
             if foodDir == None:
                 print("Chasing Tail")
                 #TODO need to change to space filling algorithm
-                buttFirstDir = ButtFirstSearch(dirsThatHaveMax, headOfOurSnake, ourSnake['coords'][-1], turnDictionary.copy(), generateDictionaryTuple(mapHeight, mapWidth))
+                buttFirstDir = ButtFirstSearch(dirsThatHaveMax, 
+                                               headOfOurSnake, 
+                                               ourSnake['coords'][-1], 
+                                               turnDictionary.copy(), 
+                                               generateDictionaryTuple(
+                                                        mapHeight, mapWidth))
                 if buttFirstDir == None:
                     print("Using Space")
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
-                    wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake, turnDictionary.copy())
-                    setHeuristicValue(directionHeuristics, wallHumpDir, 2)
+                    wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake, 
+                                           turnDictionary.copy())
+                    setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
                 else:
-                    setHeuristicValue(directionHeuristics, buttFirstDir, 3)
+                    setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
+            # We are able to get to food. Change heuristic from OPEN to FOOD
             else:
-                setHeuristicValue(directionHeuristics, foodDir, 2)
+                setHeuristicValue(directionHeuristics, foodDir, FOOD)
             currMove = getMinimalHeuristicValue(directionHeuristics)
     elif len(directionsCanGo) == 1:
         currMove = directionsCanGo[0]
     else:
         currMove = 'up'
+    # ToDo -- Callum
+    # danger check should happen after food evaluation 
+    # send determined move to server
     data = {'move': currMove, 'taunt': currTaunt}
     ret = json.dumps(data)
 
