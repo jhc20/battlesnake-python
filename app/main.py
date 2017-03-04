@@ -1,11 +1,15 @@
 import bottle
 import os
+
 import json
 import random
 import copy
 
 import uuid
 import sys
+
+from Map import Map
+
 
 '''
 Example Received Snake Object
@@ -38,6 +42,8 @@ ourName = "Jeff"
 originalDictionary = {}
 tauntList = ['with', 'Jeff', 'prepare', 'for', 'death!', 'Wrestle']
 
+mapObj = Map()
+
 
 @bottle.route('/static/<path:path>')
 def static(path):
@@ -63,11 +69,10 @@ def start():
         "food": []
     }
     '''
-
     data = bottle.request.json
-    game_id = data['game_id']
-    board_width = data['width']
-    board_height = data['height']
+    mapObj.game_id = data['game_id']
+    mapObj.board_width = data['width']
+    mapObj.board_height = data['height']
 
     head_url = '%s://%s/static/head.gif' % (
         bottle.request.urlparts.scheme,
@@ -104,13 +109,13 @@ def move():
 
     data = bottle.request.json
 
-    # Actual board that snakes play on
-    mapWidth = data['width']
-    mapHeight = data['height']
-    currTaunt = 'meow'
+    mapObj.food = data['food']
+    mapObj.board_width = data['width']
+    mapObj.board_height = data['height']
+
     # True/False for every spot on the board for visited nodes in BFS
     if (len(originalDictionary) < 1):
-        generateDictionaryTF(mapWidth, mapHeight)
+        generateDictionaryTF(mapObj)
     turnDictionary = originalDictionary.copy()
     ourSnake = {}
     otherSnakes = []
@@ -140,14 +145,12 @@ def move():
     removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary,
                           directionHeuristics)
 
-    currMove = determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, headOfOurSnake, data,
-                                     mapHeight, mapWidth, directionHeuristics, ourSnake)
+    currMove = determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, headOfOurSnake,
+                                     mapObj, directionHeuristics, ourSnake)
 
     # ToDo -- Callum
     # danger check should happen after food evaluation
     # send determined move to server
-    #     data = {'move': currMove, 'taunt': currTaunt}
-    #     ret = json.dumps(data)
 
     return {
         'move': currMove,
@@ -155,8 +158,7 @@ def move():
     }
 
 
-def determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, headOfOurSnake, data, mapHeight,
-                          mapWidth, directionHeuristics, ourSnake):
+def determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, headOfOurSnake, mapObj, directionHeuristics, ourSnake):
     currMove = "up"
     # Set heuristic values if they need to be found
     # sets collisions to == CERTAIN_DEATH
@@ -186,10 +188,11 @@ def determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate
             # First look at the direction that offers the closest food
             foodDir = getClosestFood(dirsThatHaveMax,
                                      headOfOurSnake,
-                                     data['food'],
+                                     mapObj.food,
                                      turnDictionary.copy(),
-                                     generateDictionaryTuple(
-                                         mapHeight, mapWidth))
+                                     generateDictionaryTuple(mapObj.board_height, mapObj.board_width)
+                                     )
+
             if foodDir == None:
                 print("Chasing Tail")
                 # TODO need to change to space filling algorithm
@@ -197,8 +200,9 @@ def determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate
                                                headOfOurSnake,
                                                ourSnake['coords'][-1],
                                                turnDictionary.copy(),
-                                               generateDictionaryTuple(
-                                                   mapHeight, mapWidth))
+                                               generateDictionaryTuple(mapObj.mapHeight, mapObj.mapWidth)
+                                               )
+
                 if buttFirstDir == None:
                     print("Using Space")
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
@@ -406,9 +410,9 @@ def generateDictionaryTuple(board_width, board_height):
     return tempDictionary
 
 
-def generateDictionaryTF(board_width, board_height):
-    for y in xrange(board_height):
-        for x in xrange(board_width):
+def generateDictionaryTF(mapObj):
+    for y in xrange(mapObj.board_height):
+        for x in xrange(mapObj.board_width):
             originalDictionary[(x, y)] = False
 
 
