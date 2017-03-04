@@ -28,7 +28,7 @@ Example Received Snake Object
 '''
 
 ourSnakeId = ""
-ourName = str(uuid.uuid4())
+ourName = "Jeff"#str(uuid.uuid4())
 originalDictionary = {}
 mapObj = Map()
 
