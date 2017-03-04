@@ -1,8 +1,0 @@
-Lorem Ipsum
-Enter Name
-Enter Email
-Insert Taunt Here
-Enter Bank Account #
-Test taunt please Ignore
-You've won the Mexican lottery
-404: taunt not found
