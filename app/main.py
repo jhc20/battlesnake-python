@@ -1,17 +1,11 @@
 import bottle
 import os
 
-import json
-import random
-import copy
-
-import uuid
-import sys
-
 from Snake import Snake
 from Map import Map
 from utils import generateDictionaryTF, getDirectionsCanGo, \
     removeSnakeCollisions, determineMovePriority, tauntGenerator
+
 
 '''
 Example Received Snake Object
@@ -31,11 +25,9 @@ Example Received Snake Object
 }
 '''
 
-
 ourSnakeId = ""
 ourName = "Jeff"
 originalDictionary = {}
-
 mapObj = Map()
 
 
