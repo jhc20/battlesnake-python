@@ -8,6 +8,118 @@ CERTAIN_DEATH = 6  # surrounded by walls (never pick)
 
 tauntList = ['with', 'Jeff', 'prepare', 'for', 'death!', 'Wrestle']
 
+RIGHT = 'right'
+LEFT = 'left'
+UP = 'up'
+DOWN = 'down'
+
+def containsDirection(direction, directions):
+    result = False
+
+    for dir in directions:
+        if dir == direction:
+            result = True
+            continue
+
+    return result
+
+def detectWallRidingKill(mapObj, snakeObj, dirsThatHaveMax, directionHeuristics):
+    headOfOurSnake = snakeObj.headOfOurSnake
+
+    headX = headOfOurSnake[0]
+    headY = headOfOurSnake[1]
+
+    # detect whether our snake is one row/column away from the wall and riding along
+    # wall scenarios:
+    # 1. top wall
+    # 2. right wall
+    # 3. bottom wall
+    # 4. left wall
+    nearTopWall = headY == 1
+    nearBottomWall = headY == mapObj.board_height - 2
+    nearRightWall = headX == mapObj.board_width - 2
+    nearLeftWall = headX == 1
+
+    nearTopOrBottomWall = nearTopWall or nearBottomWall
+    nearRightOrLeftWall = nearRightWall or nearLeftWall
+
+    if (nearTopOrBottomWall or nearRightOrLeftWall):
+
+        print "near top or bottom wall -----------"
+
+        # check whether it is riding parallel to the wall
+        rightTopWallRiding = nearTopWall and containsDirection(RIGHT,dirsThatHaveMax)
+        leftTopWallRiding = nearTopWall and containsDirection(LEFT, dirsThatHaveMax)
+
+        downRightWallRiding = nearRightWall and containsDirection(DOWN,dirsThatHaveMax)
+        upRightWallRiding = nearRightWall and containsDirection(UP,dirsThatHaveMax)
+
+        leftBottomWallRiding = nearBottomWall and containsDirection(LEFT,dirsThatHaveMax)
+        rightBottomWallRiding = nearBottomWall and containsDirection(RIGHT,dirsThatHaveMax)
+
+        upLeftWallRiding = nearLeftWall and containsDirection(UP, dirsThatHaveMax)
+        downLeftWallRiding = nearLeftWall and containsDirection(DOWN, dirsThatHaveMax)
+
+        isTopWallRiding = rightTopWallRiding or leftTopWallRiding
+        isRightWallRiding = downRightWallRiding or upRightWallRiding
+        isBottomWallRiding = leftBottomWallRiding or rightBottomWallRiding
+        isLeftWallRiding = upLeftWallRiding or downLeftWallRiding
+
+        isWallRiding = isTopWallRiding or isRightWallRiding or isBottomWallRiding or isLeftWallRiding
+
+        if isWallRiding:
+            topWallY = headY - 1
+            rightWallX = headX + 1
+            bottomWallY = headY + 1
+            leftWallX = headX - 1
+
+            for otherSnake in snakeObj.otherSnakes:
+                otherSnakeHead = otherSnake['coords'][0]
+                otherSnakeHeadX = otherSnakeHead[0]
+                otherSnakeHeadY = otherSnakeHead[1]
+
+                otherSnakeInitialLength = len(otherSnake['coords']) == 1
+                otherSnakeRightRiding = otherSnakeInitialLength
+                otherSnakeLeftRiding = otherSnakeInitialLength
+                otherSnakeUpRiding = otherSnakeInitialLength
+                otherSnakeDownRiding = otherSnakeInitialLength
+
+                if len(otherSnake['coords']) > 1:
+                    otherSnakeNeck = otherSnake['coords'][1]
+                    otherSnakeNeckX = otherSnakeNeck[0]
+                    otherSnakeNeckY = otherSnakeNeck[1]
+
+                    otherSnakeRightRiding = otherSnakeNeckX == otherSnakeHeadX - 1
+                    otherSnakeLeftRiding = otherSnakeNeckX == otherSnakeHeadX + 1
+                    otherSnakeUpRiding = otherSnakeNeckY == otherSnakeHeadY + 1
+                    otherSnakeDownRiding = otherSnakeNeckY == otherSnakeHeadY - 1
+
+
+                potentialSafeKillMove = ''
+
+                if rightTopWallRiding and otherSnakeRightRiding and (otherSnakeHeadX <= headX and otherSnakeHeadY == topWallY):
+                    potentialSafeKillMove = RIGHT
+                elif leftTopWallRiding and otherSnakeLeftRiding and (otherSnakeHeadX >= headX and otherSnakeHeadY == topWallY):
+                    potentialSafeKillMove = LEFT
+                elif downRightWallRiding and otherSnakeDownRiding and (otherSnakeHeadX == rightWallX and otherSnakeHeadY <= headY):
+                    potentialSafeKillMove = DOWN
+                elif upRightWallRiding and otherSnakeUpRiding and (otherSnakeHeadX == rightWallX and otherSnakeHeadY >= headY):
+                    potentialSafeKillMove = UP
+                elif leftBottomWallRiding and otherSnakeLeftRiding and (otherSnakeHeadX >= headX and otherSnakeHeadY == bottomWallY):
+                    potentialSafeKillMove = LEFT
+                elif rightBottomWallRiding and otherSnakeRightRiding and (otherSnakeHeadX <= headX and otherSnakeHeadY == bottomWallY):
+                    potentialSafeKillMove = RIGHT
+                elif upLeftWallRiding and otherSnakeUpRiding and (otherSnakeHeadX == leftWallX and otherSnakeHeadY >= headY):
+                    potentialSafeKillMove = UP
+                elif downLeftWallRiding and otherSnakeDownRiding and (otherSnakeHeadX == leftWallX and otherSnakeHeadY <= headY):
+                    potentialSafeKillMove = DOWN
+
+                # if potential cut off move is defined set the heuristic value
+                if potentialSafeKillMove != '':
+                    setHeuristicValue(directionHeuristics, potentialSafeKillMove, SAFE_KILL)
+                    continue
+
+
 
 def determineMovePriority(directionsCanGo, 
                           turnDictionary, 
@@ -76,6 +188,8 @@ def determineMovePriority(directionsCanGo,
             else:
                 setHeuristicValue(directionHeuristics, foodDir, FOOD)
             # Remove any that are dangerous
+            detectWallRidingKill(mapObj, snakeObj, dirsThatHaveMax, directionHeuristics)
+
             currMove = getMinimalHeuristicValue(directionHeuristics)
     elif len(directionsCanGo) == 1:
         currMove = directionsCanGo[0]
