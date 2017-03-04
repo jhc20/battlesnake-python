@@ -42,7 +42,9 @@ def static(path):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    mapObj.setData(data)
+    mapObj.game_id = data['game_id']
+    mapObj.board_width = data['width']
+    mapObj.board_height = data['height']
 
     head_url = '%s://%s/static/head.gif' % (
         bottle.request.urlparts.scheme,
