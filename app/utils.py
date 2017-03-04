@@ -116,21 +116,21 @@ def removeSnakeCollisions(snakeObj, turnDictionary, heuristics):
 
         # Else, we have to check if we'd run into them and avoid those 
         # directions
-        dirsCouldCollideIn(head, snake['coords'][0], heuristics, turnDictionary)
+        dirsCouldCollideIn(snakeObj, snake, heuristics, turnDictionary)
 
 
-def dirsCouldCollideIn(ourSnakeHead, 
-                       otherSnakeHead, 
+def dirsCouldCollideIn(ourSnakeObj,
+                       otherSnakeObj,
                        dirHeuristic, 
                        turnDictionary):
-    dirsOurSnakeCanGo = getDirectionsCanGo(ourSnakeHead, turnDictionary)
-    dirsOtherSnakeCanGo = getDirectionsCanGo(otherSnakeHead, turnDictionary)
+    dirsOurSnakeCanGo = getDirectionsCanGo(ourSnakeObj.headOfOurSnake, turnDictionary)
+    dirsOtherSnakeCanGo = getDirectionsCanGo(otherSnakeObj['coords'][0], turnDictionary)
     numberOfMovesTheyHave = len(dirsOurSnakeCanGo)
 
     for ourDir in dirsOurSnakeCanGo:
-        ourCoord = directionalCoordinate(ourDir, ourSnakeHead)
+        ourCoord = directionalCoordinate(ourDir, ourSnakeObj.headOfOurSnake)
         for theirDirs in dirsOtherSnakeCanGo:
-            theirCoord = directionalCoordinate(theirDirs, otherSnakeHead)
+            theirCoord = directionalCoordinate(theirDirs, ourSnakeObj.headOfOurSnake)
             if ourCoord == theirCoord:
                 if numberOfMovesTheyHave > 1:
                     setHeuristicValue(dirHeuristic, ourDir, DANGER)
@@ -138,8 +138,8 @@ def dirsCouldCollideIn(ourSnakeHead,
                     setHeuristicValue(dirHeuristic, ourDir, CERTAIN_DEATH)
 
 
-def getDirectionsCanGo(snakeObj, turnDictionary):
-    head = snakeObj.headOfOurSnake
+def getDirectionsCanGo(snakeHead, turnDictionary):
+    head = snakeHead
     canGo = []
     x = head[0]
     y = head[1]

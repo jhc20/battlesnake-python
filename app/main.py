@@ -1,11 +1,13 @@
 import bottle
 import os
+import sys
 
 from Snake import Snake
 from Map import Map
 from utils import generateDictionaryTF, getDirectionsCanGo, \
     removeSnakeCollisions, determineMovePriority, tauntGenerator
 
+import uuid
 
 '''
 Example Received Snake Object
@@ -26,7 +28,7 @@ Example Received Snake Object
 '''
 
 ourSnakeId = ""
-ourName = "Jeff"
+ourName = str(uuid.uuid4())
 originalDictionary = {}
 mapObj = Map()
 
@@ -76,15 +78,31 @@ def move():
             snakeObj.headOfOurSnake = ourSnake['coords'][0]
         else:
             snakeObj.otherSnakes.append(snake)
+
+        # If it's the first few turns we want to not remove the tail from nodes that can be removed from the list
+        # as the snake extends out in the first 3 turns
+        print("Turn: ")
+        print(data['turn'])
+
+        coordsToIterateThrough = snake['coords'][:-1]
+        if data['turn'] < 2:
+            coordsToIterateThrough = snake['coords']
+
         # removes all snake bodies/tail (not head) from list of
         # possible co-ordinates
-        for coord in snake['coords'][:-1]:
+        print("coords to iterate through:")
+        print(coordsToIterateThrough)
+
+
+        for coord in coordsToIterateThrough:
+            print("coord to remove: ")
+            print(coord)
             x = coord[0]
             y = coord[1]
             if not turnDictionary.get((x, y), None) is None:
                 del turnDictionary[(x, y)]
     # dictionary of all 4 directions
-    directionsCanGo = getDirectionsCanGo(snakeObj, turnDictionary)
+    directionsCanGo = getDirectionsCanGo(snakeObj.headOfOurSnake, turnDictionary)
     # dictionary holding all possible directions in form:
     # [direction, heuristicValue]
     directionHeuristics = {}
@@ -94,6 +112,7 @@ def move():
                                      mapObj, 
                                      directionHeuristics, 
                                      snakeObj)
+
     removeSnakeCollisions(snakeObj, turnDictionary, directionHeuristics)
     # ToDo -- Callum
     # danger check should happen after food evaluation
@@ -107,5 +126,7 @@ def move():
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
 if __name__ == '__main__':
-    bottle.run(application, host=os.getenv('IP', '0.0.0.0'), 
-            port=os.getenv('PORT', '8080'))
+    port = '8080'
+    if len(sys.argv) > 1:
+        port = sys.argv[1]
+    bottle.run(application, host=os.getenv('IP', '0.0.0.0'), port=os.getenv('PORT', port))
