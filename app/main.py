@@ -7,6 +7,8 @@ import copy
 import uuid
 import sys
 
+from Snake import Snake
+
 '''
 Example Received Snake Object
 
@@ -82,8 +84,7 @@ def start():
     }
 
 
-@bottle.post('/move')
-def move():
+
     '''
     Recieved Move object for /move
     {
@@ -102,26 +103,26 @@ def move():
 
     '''
 
+@bottle.post('/move')
+def move():
+    snakeObj = Snake() 
     data = bottle.request.json
-
     # Actual board that snakes play on
     mapWidth = data['width']
     mapHeight = data['height']
-    currTaunt = 'meow'
     # True/False for every spot on the board for visited nodes in BFS
     if (len(originalDictionary) < 1):
         generateDictionaryTF(mapWidth, mapHeight)
     turnDictionary = originalDictionary.copy()
-    ourSnake = {}
-    otherSnakes = []
-
     # Remove spots that are completely unavailable
     # Makes list for other snakes by looking at all snakes with name != ours
     for snake in data['snakes']:
         if snake['name'] == ourName:
             ourSnake = snake
+            snakeObj.ourSnake = ourSnake
+            snakeObj.headOfOurSnake = ourSnake['coords'][0]
         else:
-            otherSnakes.append(snake)
+            snakeObj.otherSnakes.append(snake)
         # removes all snake bodies/tail (not head) from list of
         # possible co-ordinates
         for coord in snake['coords'][:-1]:
@@ -129,20 +130,17 @@ def move():
             y = coord[1]
             if not turnDictionary.get((x, y), None) is None:
                 del turnDictionary[(x, y)]
-
-    headOfOurSnake = ourSnake['coords'][0]
     # dictionary of all 4 directions
-    directionsCanGo = getDirectionsCanGo(headOfOurSnake, turnDictionary)
+    directionsCanGo = getDirectionsCanGo(snakeObj, turnDictionary)
     # dictionary holding all possible directions in form:
     # [direction, heuristicValue]
     directionHeuristics = {}
     # set collision directions == 5 (Danger)
-    removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary,
-                          directionHeuristics)
-
-    currMove = determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, headOfOurSnake, data,
-                                     mapHeight, mapWidth, directionHeuristics, ourSnake)
-
+    removeSnakeCollisions(snakeObj, turnDictionary, directionHeuristics)
+    currMove = determineMovePriority(directionsCanGo, turnDictionary, 
+                                     directionalCoordinate,
+                                     data, mapHeight, mapWidth, 
+                                     directionHeuristics, snakeObj)
     # ToDo -- Callum
     # danger check should happen after food evaluation
     # send determined move to server
@@ -155,8 +153,10 @@ def move():
     }
 
 
-def determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, headOfOurSnake, data, mapHeight,
-                          mapWidth, directionHeuristics, ourSnake):
+def determineMovePriority(directionsCanGo, turnDictionary, directionalCoordinate, data, mapHeight,
+                          mapWidth, directionHeuristics, snakeObj):
+    headOfOurSnake = snakeObj.headOfOurSnake
+    ourSnake = snakeObj.ourSnake
     currMove = "up"
     # Set heuristic values if they need to be found
     # sets collisions to == CERTAIN_DEATH
@@ -237,10 +237,11 @@ def directionalCoordinate(direction, withRespectTo):
         return (x - 1, y)
 
 
-def removeSnakeCollisions(ourSnake, otherSnakes, turnDictionary, heuristics):
+def removeSnakeCollisions(snakeObj, turnDictionary, heuristics):
+    ourSnake = snakeObj.ourSnake
+    otherSnakes = snakeObj.otherSnakes
     # Our snakes head
     head = ourSnake['coords'][0]
-
     # ----- Other Snakes (Where head is going to go)/ Head collision detection ----
     for snake in otherSnakes:
         # Check if we're longer, if so continue
@@ -267,7 +268,8 @@ def dirsCouldCollideIn(ourSnakeHead, otherSnakeHead, dirHeuristic, turnDictionar
                     setHeuristicValue(dirHeuristic, ourDir, 6)
 
 
-def getDirectionsCanGo(head, turnDictionary):
+def getDirectionsCanGo(snakeObj, turnDictionary):
+    head = snakeObj.headOfOurSnake
     canGo = []
     x = head[0]
     y = head[1]
