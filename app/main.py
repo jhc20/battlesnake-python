@@ -99,21 +99,24 @@ def move():
             print(coord)
             x = coord[0]
             y = coord[1]
+            # removes move directions that are directly onto enemy snakes
             if not turnDictionary.get((x, y), None) is None:
                 del turnDictionary[(x, y)]
+            
     # dictionary of all 4 directions
-    directionsCanGo = getDirectionsCanGo(snakeObj.headOfOurSnake, turnDictionary)
+    directionsCanGo = getDirectionsCanGo(snakeObj.headOfOurSnake, 
+            turnDictionary)
     # dictionary holding all possible directions in form:
     # [direction, heuristicValue]
     directionHeuristics = {}
     # set collision directions == 5 (Danger)
+    removeSnakeCollisions(snakeObj, turnDictionary, directionHeuristics)
     currMove = determineMovePriority(directionsCanGo, 
                                      turnDictionary,  
                                      mapObj, 
                                      directionHeuristics, 
                                      snakeObj)
 
-    removeSnakeCollisions(snakeObj, turnDictionary, directionHeuristics)
     # ToDo -- Callum
     # danger check should happen after food evaluation
     # send determined move to server

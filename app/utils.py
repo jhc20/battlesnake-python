@@ -135,7 +135,8 @@ def dirsCouldCollideIn(ourSnakeObj,
                 if numberOfMovesTheyHave > 1:
                     setHeuristicValue(dirHeuristic, ourDir, DANGER)
                 elif numberOfMovesTheyHave == 1:
-                    setHeuristicValue(dirHeuristic, ourDir, CERTAIN_DEATH)
+                    setHeuristicValue(dirHeuristic, ourDir, CERTAIN_DEATH, 
+                            turnDictionary, ourCoord)
 
 
 def getDirectionsCanGo(snakeHead, turnDictionary):
@@ -287,7 +288,11 @@ def generateDictionaryTF(mapObj, originalDictionary):
 
 
 # For setting the heuristic entries, we only assign higher values
-def setHeuristicValue(heuristic, key, value):
+def setHeuristicValue(heuristic, key, value, turnDict=None, coord=None):
+    if value == CERTAIN_DEATH:
+        print "Removing CERTAIN_DEATH spots from the turnDict and heuristic"
+        # removeItemFromDictionary(coord, turnDict)
+        # del heuristic[key]
     if heuristic.get(key, None) is None:
         heuristic[key] = value
     elif heuristic[key] < value:
