@@ -50,7 +50,6 @@ def determineMovePriority(directionsCanGo,
                                      turnDictionary.copy(),
                                      generateDictionaryTuple(mapObj)
                                      )
-
             if foodDir == None:
                 print("Chasing Tail")
                 # TODO need to change to space filling algorithm
@@ -66,12 +65,15 @@ def determineMovePriority(directionsCanGo,
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
                     wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake,
                                            turnDictionary.copy())
-                    setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
+                    if directionHeuristics[wallHumpDir] != DANGER:
+                        setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
                 else:
-                    setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
+                    if directionHeuristics[wallHumpDir] != DANGER:
+                        setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
             # We are able to get to food. Change heuristic from OPEN to FOOD
             else:
                 setHeuristicValue(directionHeuristics, foodDir, FOOD)
+            # Remove any that are dangerous
             currMove = getMinimalHeuristicValue(directionHeuristics)
     elif len(directionsCanGo) == 1:
         currMove = directionsCanGo[0]
@@ -129,9 +131,9 @@ def dirsCouldCollideIn(ourSnakeHead,
             theirCoord = directionalCoordinate(theirDirs, otherSnakeHead)
             if ourCoord == theirCoord:
                 if numberOfMovesTheyHave > 1:
-                    setHeuristicValue(dirHeuristic, ourDir, 5)
+                    setHeuristicValue(dirHeuristic, ourDir, DANGER)
                 elif numberOfMovesTheyHave == 1:
-                    setHeuristicValue(dirHeuristic, ourDir, 6)
+                    setHeuristicValue(dirHeuristic, ourDir, CERTAIN_DEATH)
 
 
 def getDirectionsCanGo(snakeObj, turnDictionary):
