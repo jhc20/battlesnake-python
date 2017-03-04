@@ -4,6 +4,7 @@ class Map(object):
         board_width = None
         board_height = None
         food = None
+        turn = None
 
         return
 
@@ -11,4 +12,5 @@ class Map(object):
         self.food = data['food']
         self.board_width = data['width']
         self.board_height = data['height']
+        self.turn = data['turn']
         return

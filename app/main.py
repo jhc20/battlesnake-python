@@ -42,9 +42,7 @@ def static(path):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    mapObj.game_id = data['game_id']
-    mapObj.board_width = data['width']
-    mapObj.board_height = data['height']
+    mapObj.setData(data)
 
     head_url = '%s://%s/static/head.gif' % (
         bottle.request.urlparts.scheme,
@@ -101,7 +99,7 @@ def move():
 
     return {
         'move': currMove,
-        'taunt': tauntGenerator()
+        'taunt': tauntGenerator(mapObj)
     }
 
 # Expose WSGI app (so gunicorn can find it)

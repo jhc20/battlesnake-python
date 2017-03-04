@@ -60,6 +60,8 @@ def determineMovePriority(directionsCanGo,
                                                generateDictionaryTuple(mapObj)
                                                )
 
+                #WE NEED TO CHANGE THIS......
+                wallHumpDir = None
                 if buttFirstDir == None:
                     print("Using Space")
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
@@ -302,8 +304,10 @@ def getMinimalHeuristicValue(heuristic):
     return minDir
 
 
-def tauntGenerator():
-    currentTaunt = tauntList.pop(0)
-    tauntList.append(currentTaunt)
-    return currentTaunt
+def tauntGenerator(mapObj):
+    # currentTaunt = tauntList.pop(0)
+    # tauntList.append(currentTaunt)
+    print(tauntList[mapObj.turn % 6])
+
+    return tauntList[mapObj.turn % 6]
 
