@@ -106,14 +106,16 @@ def move():
     # dictionary holding all possible directions in form:
     # [direction, heuristicValue]
     directionHeuristics = {}
+
+
+    removeSnakeCollisions(snakeObj, turnDictionary, directionHeuristics)
+
     # set collision directions == 5 (Danger)
     currMove = determineMovePriority(directionsCanGo, 
                                      turnDictionary,  
                                      mapObj, 
                                      directionHeuristics, 
                                      snakeObj)
-
-    removeSnakeCollisions(snakeObj, turnDictionary, directionHeuristics)
     # ToDo -- Callum
     # danger check should happen after food evaluation
     # send determined move to server

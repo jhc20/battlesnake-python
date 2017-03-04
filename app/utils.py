@@ -67,11 +67,11 @@ def determineMovePriority(directionsCanGo,
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
                     wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake,
                                            turnDictionary.copy())
-                    if directionHeuristics[wallHumpDir] != DANGER:
-                        setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
+                    #if directionHeuristics[wallHumpDir] != DANGER:
+                    setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
                 else:
-                    if directionHeuristics[wallHumpDir] != DANGER:
-                        setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
+                    #if directionHeuristics[wallHumpDir] != DANGER:
+                    setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
             # We are able to get to food. Change heuristic from OPEN to FOOD
             else:
                 setHeuristicValue(directionHeuristics, foodDir, FOOD)
@@ -125,12 +125,12 @@ def dirsCouldCollideIn(ourSnakeObj,
                        turnDictionary):
     dirsOurSnakeCanGo = getDirectionsCanGo(ourSnakeObj.headOfOurSnake, turnDictionary)
     dirsOtherSnakeCanGo = getDirectionsCanGo(otherSnakeObj['coords'][0], turnDictionary)
-    numberOfMovesTheyHave = len(dirsOurSnakeCanGo)
+    numberOfMovesTheyHave = len(dirsOtherSnakeCanGo)
 
     for ourDir in dirsOurSnakeCanGo:
         ourCoord = directionalCoordinate(ourDir, ourSnakeObj.headOfOurSnake)
         for theirDirs in dirsOtherSnakeCanGo:
-            theirCoord = directionalCoordinate(theirDirs, ourSnakeObj.headOfOurSnake)
+            theirCoord = directionalCoordinate(theirDirs, otherSnakeObj['coords'][0])
             if ourCoord == theirCoord:
                 if numberOfMovesTheyHave > 1:
                     setHeuristicValue(dirHeuristic, ourDir, DANGER)
@@ -295,7 +295,9 @@ def setHeuristicValue(heuristic, key, value):
 
 
 def getMinimalHeuristicValue(heuristic):
-    min = 10
+    print("Heuristic values:")
+    print(heuristic)
+    min = CERTAIN_DEATH
     minDir = ''
     for dir in heuristic:
         if heuristic[dir] < min:
