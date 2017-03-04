@@ -106,13 +106,14 @@ def start():
 
     '''
 
+    
+
+
 @bottle.post('/move')
 def move():
     snakeObj = Snake() 
     data = bottle.request.json
-    mapObj.food = data['food']
-    mapObj.board_width = data['width']
-    mapObj.board_height = data['height']
+    mapObj.setData(data)
     # True/False for every spot on the board for visited nodes in BFS
     if (len(originalDictionary) < 1):
         generateDictionaryTF(mapObj)

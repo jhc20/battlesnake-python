@@ -16,6 +16,7 @@ class Snake(object):
 
 
 
+
 # Old code from inside the snake Object
 # Being ignored for now
     # def __init__(self, snake_id, name, status, message, taunt, age, health, coords, kills):

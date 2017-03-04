@@ -6,3 +6,9 @@ class Map(object):
         food = None
 
         return
+
+    def setData(self, data):
+        self.food = data['food']
+        self.board_width = data['width']
+        self.board_height = data['height']
+        return
