@@ -55,20 +55,6 @@ def static(path):
 
 @bottle.post('/start')
 def start():
-    '''
-    Object recieved for /start
-    {
-        "game": "hairy-cheese",
-        "mode": "advanced",
-        "turn": 0,
-        "height": 20,
-        "width": 30,
-        "snakes": [
-            <Snake Object>, <Snake Object>, ...
-        ],
-        "food": []
-    }
-    '''
     data = bottle.request.json
     mapObj.game_id = data['game_id']
     mapObj.board_width = data['width']
@@ -85,29 +71,6 @@ def start():
         'head_url': head_url,
         'name': ourName
     }
-
-
-
-    '''
-    Recieved Move object for /move
-    {
-        "game": "hairy-cheese",
-        "mode": "advanced",
-        "turn": 4,
-        "height": 20,
-        "width": 30,
-        "snakes": [
-            <Snake Object>, <Snake Object>, ...
-        ],
-        "food": [
-            [1, 2], [9, 3], ...
-        ]
-    }
-
-    '''
-
-    
-
 
 @bottle.post('/move')
 def move():
@@ -197,9 +160,7 @@ def determineMovePriority(directionsCanGo,
                                      headOfOurSnake,
                                      mapObj.food,
                                      turnDictionary.copy(),
-                                     generateDictionaryTuple(
-                                            mapObj.board_height, 
-                                            mapObj.board_width)
+                                     generateDictionaryTuple(mapObj)
                                      )
 
             if foodDir == None:
@@ -209,9 +170,7 @@ def determineMovePriority(directionsCanGo,
                                                headOfOurSnake,
                                                ourSnake['coords'][-1],
                                                turnDictionary.copy(),
-                                               generateDictionaryTuple(
-                                                        mapObj.mapHeight, 
-                                                        mapObj.mapWidth)
+                                               generateDictionaryTuple(mapObj)
                                                )
 
                 if buttFirstDir == None:
@@ -421,10 +380,10 @@ def wallHump(dirsFromHead, head, otherNodes):
             return dir
 
 
-def generateDictionaryTuple(board_width, board_height):
+def generateDictionaryTuple(mapObj):
     tempDictionary = {}
-    for y in xrange(board_height):
-        for x in xrange(board_width):
+    for y in xrange(mapObj.board_height):
+        for x in xrange(mapObj.board_width):
             tempDictionary[(x, y)] = ()
     return tempDictionary
 
