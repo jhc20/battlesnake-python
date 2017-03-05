@@ -28,7 +28,7 @@ Example Received Snake Object
 '''
 
 ourSnakeId = ""
-ourName = "Jeff"#str(uuid.uuid4())
+ourName = "Jeff"
 originalDictionary = {}
 mapObj = Map()
 
@@ -81,22 +81,13 @@ def move():
 
         # If it's the first few turns we want to not remove the tail from nodes that can be removed from the list
         # as the snake extends out in the first 3 turns
-        print("Turn: ")
-        print(data['turn'])
-
         coordsToIterateThrough = snake['coords'][:-1]
         if data['turn'] < 2:
             coordsToIterateThrough = snake['coords']
 
         # removes all snake bodies/tail (not head) from list of
         # possible co-ordinates
-        print("coords to iterate through:")
-        print(coordsToIterateThrough)
-
-
         for coord in coordsToIterateThrough:
-            print("coord to remove: ")
-            print(coord)
             x = coord[0]
             y = coord[1]
             # removes move directions that are directly onto enemy snakes

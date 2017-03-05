@@ -45,7 +45,6 @@ def detectWallRidingKill(mapObj, snakeObj, dirsThatHaveMax, directionHeuristics)
 
     if (nearTopOrBottomWall or nearRightOrLeftWall):
 
-        print "near top or bottom wall -----------"
 
         # check whether it is riding parallel to the wall
         rightTopWallRiding = nearTopWall and containsDirection(RIGHT,dirsThatHaveMax)
@@ -163,7 +162,6 @@ def determineMovePriority(directionsCanGo,
                                      generateDictionaryTuple(mapObj)
                                      )
             if foodDir == None:
-                print("Chasing Tail")
                 # TODO need to change to space filling algorithm
                 buttFirstDir = ButtFirstSearch(dirsThatHaveMax,
                                                headOfOurSnake,
@@ -175,7 +173,6 @@ def determineMovePriority(directionsCanGo,
                 #WE NEED TO CHANGE THIS......
                 wallHumpDir = None
                 if buttFirstDir == None:
-                    print("Using Space")
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
                     wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake,
                                            turnDictionary.copy())
@@ -332,7 +329,6 @@ def getClosestFood(dirsFromHead, head, foods, otherNodes, parentDictionary):
             while not (parentDictionary[node] == head):
                 node = parentDictionary[node]
             if determineDirection(node, head) in dirsFromHead:
-                print(determineDirection(node, head))
                 return determineDirection(node, head)
         childNode = getUnvisitedNeighbor(node, otherNodes)
         while not childNode == None:
@@ -353,7 +349,6 @@ def ButtFirstSearch(dirsFromHead, head, tail, otherNodes, parentDictionary):
             while not (parentDictionary[node] == head):
                 node = parentDictionary[node]
             if determineDirection(node, head) in dirsFromHead:
-                print(determineDirection(node, head))
                 return determineDirection(node, head)
         childNode = getUnvisitedNeighbor(node, otherNodes)
         while not childNode == None:
@@ -427,23 +422,21 @@ def strictlySetHeuristicValue(heuristic, key, value, turnDict=None, coord=None):
     return
 
 def getMinimalHeuristicValue(heuristic):
-    print("Heuristic values:")
-    print(heuristic)
     minVal = CERTAIN_DEATH
     minDir = ''
     for direc in heuristic:
         if heuristic[direc] < minVal:
             minVal = heuristic[direc]
             minDir = direc
-    print "Minimum heuristic value is ", minVal
-    print "Entire heuristic is ", heuristic
+    print "heuristics"
+    print heuristic
+    print "min dir"
+    print minDir
     return minDir
 
 
 def tauntGenerator(mapObj):
     # currentTaunt = tauntList.pop(0)
     # tauntList.append(currentTaunt)
-    print(tauntList[mapObj.turn % 6])
-
     return tauntList[mapObj.turn % 6]
 
