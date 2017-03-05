@@ -67,15 +67,18 @@ def determineMovePriority(directionsCanGo,
                     # currMove = dirsThatHaveMax[random.randint(0, len(dirsThatHaveMax) - 1)]
                     wallHumpDir = wallHump(dirsThatHaveMax, headOfOurSnake,
                                            turnDictionary.copy())
-                    if directionHeuristics[wallHumpDir] != DANGER:
-                        setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
+                    #if directionHeuristics[wallHumpDir] != DANGER:
+                    setHeuristicValue(directionHeuristics, wallHumpDir, FOOD)
                 else:
-                    if directionHeuristics[wallHumpDir] != DANGER:
-                        setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
+                    #if directionHeuristics[wallHumpDir] != DANGER:
+                    setHeuristicValue(directionHeuristics, buttFirstDir, OPEN)
             # We are able to get to food. Change heuristic from OPEN to FOOD
             else:
+                # if directionHeuristics[foodDir] != DANGER:
                 setHeuristicValue(directionHeuristics, foodDir, FOOD)
             # Remove any that are dangerous
+            populateMissingHeuristics(directionHeuristics, headOfOurSnake, 
+                    turnDictionary)
             currMove = getMinimalHeuristicValue(directionHeuristics)
     elif len(directionsCanGo) == 1:
         currMove = directionsCanGo[0]
@@ -125,12 +128,12 @@ def dirsCouldCollideIn(ourSnakeObj,
                        turnDictionary):
     dirsOurSnakeCanGo = getDirectionsCanGo(ourSnakeObj.headOfOurSnake, turnDictionary)
     dirsOtherSnakeCanGo = getDirectionsCanGo(otherSnakeObj['coords'][0], turnDictionary)
-    numberOfMovesTheyHave = len(dirsOurSnakeCanGo)
+    numberOfMovesTheyHave = len(dirsOtherSnakeCanGo)
 
     for ourDir in dirsOurSnakeCanGo:
         ourCoord = directionalCoordinate(ourDir, ourSnakeObj.headOfOurSnake)
         for theirDirs in dirsOtherSnakeCanGo:
-            theirCoord = directionalCoordinate(theirDirs, ourSnakeObj.headOfOurSnake)
+            theirCoord = directionalCoordinate(theirDirs, otherSnakeObj['coords'][0])
             if ourCoord == theirCoord:
                 if numberOfMovesTheyHave > 1:
                     setHeuristicValue(dirHeuristic, ourDir, DANGER)
@@ -272,6 +275,13 @@ def wallHump(dirsFromHead, head, otherNodes):
         if dirMap[dir] == 3:  # 3:
             return dir
 
+def populateMissingHeuristics(directionHeuristics, snakeHead, dictionary):
+    dirs = getDirectionsCanGo(snakeHead, dictionary)
+    for dire in dirs:
+        if not dire in directionHeuristics.keys():
+            setHeuristicValue(directionHeuristics, dire, OPEN)
+        
+    return
 
 def generateDictionaryTuple(mapObj):
     tempDictionary = {}
@@ -290,8 +300,8 @@ def generateDictionaryTF(mapObj, originalDictionary):
 # For setting the heuristic entries, we only assign higher values
 def setHeuristicValue(heuristic, key, value, turnDict=None, coord=None):
     if value == CERTAIN_DEATH:
-        print "Removing CERTAIN_DEATH spots from the turnDict and heuristic"
-        # removeItemFromDictionary(coord, turnDict)
+        # print "Removing CERTAIN_DEATH spots from the turnDict and heuristic"
+        removeItemFromDictionary(coord, turnDict)
         # del heuristic[key]
     if heuristic.get(key, None) is None:
         heuristic[key] = value
@@ -299,13 +309,21 @@ def setHeuristicValue(heuristic, key, value, turnDict=None, coord=None):
         heuristic[key] = value
 
 
+def strictlySetHeuristicValue(heuristic, key, value, turnDict=None, coord=None):
+    heuristic[key] = value    
+    return
+
 def getMinimalHeuristicValue(heuristic):
-    min = 10
+    print("Heuristic values:")
+    print(heuristic)
+    minVal = CERTAIN_DEATH
     minDir = ''
-    for dir in heuristic:
-        if heuristic[dir] < min:
-            min = heuristic[dir]
-            minDir = dir
+    for direc in heuristic:
+        if heuristic[direc] < minVal:
+            minVal = heuristic[direc]
+            minDir = direc
+    print "Minimum heuristic value is ", minVal
+    print "Entire heuristic is ", heuristic
     return minDir
 
 
