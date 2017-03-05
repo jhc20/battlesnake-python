@@ -72,7 +72,7 @@ def move():
     # Remove spots that are completely unavailable
     # Makes list for other snakes by looking at all snakes with name != ours
     for snake in data['snakes']:
-        if snake['name'] == ourName:
+        if snake['id'] == data['you']:
             ourSnake = snake
             snakeObj.ourSnake = ourSnake
             snakeObj.headOfOurSnake = ourSnake['coords'][0]
